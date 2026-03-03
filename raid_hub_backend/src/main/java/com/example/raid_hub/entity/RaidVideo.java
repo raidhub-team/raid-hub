@@ -52,4 +52,12 @@ public class RaidVideo {
   @Size(max = 20, message = "관문은 20자 이하여야 합니다")
   @Column(nullable = false, length = 20)
   private String gate; // 전체, 1관문, 2관문... 자유 입력
+
+  @Column(nullable = false, updatable = false)
+  private java.time.LocalDateTime createdAt;
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = java.time.LocalDateTime.now();
+  }
 }

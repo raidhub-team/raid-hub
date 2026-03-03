@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/browser_client.dart';
 import '../models/raid_video.dart';
 import '../models/playlist_item.dart';
+import '../models/cheat_sheet.dart'; // Import CheatSheet model
 import 'package:raid_hub_frontend/services/auth_service.dart'; // Import AuthService
 
 class ApiService {
@@ -10,6 +11,86 @@ class ApiService {
   final String _apiBaseUrl = "http://localhost:8080/api"; // Added base API URL
   final AuthService _authService = AuthService(); // Get the AuthService instance
   final http.Client _client = BrowserClient()..withCredentials = true;
+
+  // Cheat Sheet 관련 API 추가
+  Future<List<CheatSheet>> getCheatSheets() async {
+    try {
+      final response = await _client.get(
+        Uri.parse('$_apiBaseUrl/cheatsheets'),
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
+        return body.map((dynamic item) => CheatSheet.fromJson(item)).toList();
+      } else {
+        throw Exception('Failed to load cheat sheets');
+      }
+    } catch (e) {
+      print('Error fetching cheat sheets: $e');
+      return [];
+    }
+  }
+
+  Future<void> deleteCheatSheet(int id) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('$_apiBaseUrl/cheatsheets/$id'),
+        headers: _authService.getAuthHeaders(),
+      );
+
+      if (response.statusCode != 204) {
+        throw Exception('Failed to delete cheat sheet: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error deleting cheat sheet: $e');
+      throw e;
+    }
+  }
+
+  // 이미지 업로드를 위한 MultipartRequest 처리 (브라우저용)
+  Future<void> uploadCheatSheet({
+    required String title,
+    required String raidName,
+    required String gate,
+    required String uploaderName, // Added
+    required List<int> fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse('$_apiBaseUrl/cheatsheets'));
+      request.fields['title'] = title;
+      request.fields['raidName'] = raidName;
+      request.fields['gate'] = gate;
+      request.fields['uploaderName'] = uploaderName; // Added
+      
+      // 파일 추가
+      var multipartFile = http.MultipartFile.fromBytes(
+        'file', 
+        fileBytes,
+        filename: fileName,
+      );
+      request.files.add(multipartFile);
+
+      // 브라우저 클라이언트 설정 (쿠키/자격증명 전송을 위함)
+      if (_client is BrowserClient) {
+        (_client as BrowserClient).withCredentials = true;
+      }
+      
+      // AuthService의 헤더를 가져옴 (쿠키 등은 BrowserClient가 처리함)
+      // request.headers.addAll(_authService.getAuthHeaders());
+
+      final response = await _client.send(request);
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode != 200) {
+        print('Upload failed: $responseBody');
+        throw Exception('Upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error uploading cheat sheet: $e');
+      throw e;
+    }
+  }
 
   Future<List<RaidVideo>> getVideos() async {
     try {

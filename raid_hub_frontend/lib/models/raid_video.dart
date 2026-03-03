@@ -6,6 +6,7 @@ class RaidVideo {
   final String raidName;
   final String difficulty;
   final String gate;
+  final DateTime? createdAt;
 
   RaidVideo({
     this.id,
@@ -15,6 +16,7 @@ class RaidVideo {
     required this.raidName,
     required this.difficulty,
     required this.gate,
+    this.createdAt,
   });
 
   factory RaidVideo.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class RaidVideo {
       raidName: json['raidName'],
       difficulty: json['difficulty'],
       gate: json['gate'],
+      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
     );
   }
 
