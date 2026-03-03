@@ -7,6 +7,7 @@ import 'package:raid_hub_frontend/services/auth_service.dart'; // Import AuthSer
 
 class ApiService {
   final String baseUrl = "http://localhost:8080/api/videos";
+  final String _apiBaseUrl = "http://localhost:8080/api"; // Added base API URL
   final AuthService _authService = AuthService(); // Get the AuthService instance
   final http.Client _client = BrowserClient()..withCredentials = true;
 
@@ -64,6 +65,62 @@ class ApiService {
     } catch (e) {
       print('Error deleting video: $e');
       throw e;
+    }
+  }
+
+  Future<void> blockVideo(String videoId, String reason) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('$_apiBaseUrl/blocked-videos'),
+        headers: _authService.getAuthHeaders(),
+        body: jsonEncode({'videoId': videoId, 'reason': reason}),
+      );
+
+      if (response.statusCode == 200) {
+        return;
+      } else {
+        throw Exception('Failed to block video: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error blocking video: $e');
+      throw e;
+    }
+  }
+
+  Future<void> unblockVideo(String videoId) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('$_apiBaseUrl/blocked-videos/$videoId'),
+        headers: _authService.getAuthHeaders(), // Include auth headers
+      );
+
+      if (response.statusCode == 204) {
+        return;
+      } else {
+        throw Exception('Failed to unblock video: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error unblocking video: $e');
+      throw e;
+    }
+  }
+
+  Future<List<String>> getBlockedVideoIds() async {
+    try {
+      final response = await _client.get(
+        Uri.parse('$_apiBaseUrl/blocked-videos'),
+        headers: _authService.getAuthHeaders(),
+      );
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> body = jsonDecode(response.body);
+        return body.cast<String>();
+      } else {
+        throw Exception('Failed to load blocked video IDs');
+      }
+    } catch (e) {
+      print('Error fetching blocked video IDs: $e');
+      return [];
     }
   }
 

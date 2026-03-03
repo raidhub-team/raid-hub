@@ -26,16 +26,13 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
   String? get loginErrorMessage => _loginErrorMessage;
 
   Future<void> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? sessionId = prefs.getString(_sessionIdKey);
-    final String? storedUsername = prefs.getString(_usernameKey);
-
-    if (sessionId != null && storedUsername != null) {
-      _sessionCookie = 'JSESSIONID=$sessionId';
-      _username = storedUsername;
-      _role = storedUsername == 'admin' ? 'ADMIN' : 'USER';
-      notifyListeners();
-    }
+    // To ensure a fresh start on every page load/re-entry, clear stored session and start logged out.
+    await _clearSession();
+    _sessionCookie = null;
+    _username = null;
+    _role = null;
+    print('Starting fresh: Always logged out on entry.');
+    notifyListeners();
   }
 
   Future<bool> checkUsernameAvailability(String username) async {

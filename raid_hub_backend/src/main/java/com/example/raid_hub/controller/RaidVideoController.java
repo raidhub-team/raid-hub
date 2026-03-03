@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/videos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // 플러터(웹)에서 접근 허용 (CORS)
 public class RaidVideoController {
 
   private final RaidVideoService raidVideoService;

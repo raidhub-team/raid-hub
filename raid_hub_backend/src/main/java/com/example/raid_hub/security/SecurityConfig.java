@@ -27,30 +27,67 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper objectMapper)
       throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
+        .csrf(csrf -> csrf.disable()) // CSRF 비활성화
         .authorizeHttpRequests(
             authorizeRequests ->
                 authorizeRequests
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll() // Allow all OPTIONS requests
+                    .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/users/register")
-                    .permitAll() // Allow user registration without authentication
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/users/check-username/**")
-                    .permitAll() // Allow username check without authentication
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/youtube/playlist-items")
-                    .permitAll() // Allow playlist items without authentication
+                    .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/videos")
-                    .hasRole("ADMIN") // Only ADMIN can POST to /api/videos
+                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/api/videos/**")
-                    .hasRole("ADMIN") // Only ADMIN can DELETE videos
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/blocked-videos")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/blocked-videos/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/blocked-videos")
+                    .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/**")
-                    .permitAll() // Allow GET /api requests
+                    .permitAll()
                     .anyRequest()
-                    .authenticated() // All other requests require authentication
-            )
+                    .authenticated())
+        .exceptionHandling(
+            exceptionHandling ->
+                exceptionHandling
+                    .authenticationEntryPoint(
+                        (request, response, authException) -> {
+                          // API 요청인 경우 리다이렉트 대신 401 반환
+                          if (request.getRequestURI().startsWith("/api/")) {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+                            Map<String, Object> responseMap = new HashMap<>();
+                            responseMap.put("success", false);
+                            responseMap.put("message", "인증이 필요합니다.");
+                            response
+                                .getWriter()
+                                .write(objectMapper.writeValueAsString(responseMap));
+                          } else {
+                            response.sendRedirect("/login");
+                          }
+                        })
+                    .accessDeniedHandler(
+                        (request, response, accessDeniedException) -> {
+                          // 권한 부족 시 403 반환
+                          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                          response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                          response.setCharacterEncoding("UTF-8");
+                          Map<String, Object> responseMap = new HashMap<>();
+                          responseMap.put("success", false);
+                          responseMap.put("message", "접근 권한이 없습니다.");
+                          response.getWriter().write(objectMapper.writeValueAsString(responseMap));
+                        }))
         .formLogin(
             formLogin ->
                 formLogin
-                    .permitAll() // Allow everyone to access the login page
+                    .permitAll()
                     .successHandler(
                         (request, response, authentication) -> {
                           response.setStatus(HttpServletResponse.SC_OK);
@@ -60,7 +97,7 @@ public class SecurityConfig {
                           responseMap.put("success", true);
                           responseMap.put("message", "성공적으로 로그인하였습니다.");
                           responseMap.put("username", authentication.getName());
-                          responseMap.put("sessionId", request.getSession().getId()); // 세션 ID 추가
+                          responseMap.put("sessionId", request.getSession().getId());
                           response.getWriter().write(objectMapper.writeValueAsString(responseMap));
                         })
                     .failureHandler(
@@ -78,8 +115,7 @@ public class SecurityConfig {
                           }
 
                           response.getWriter().write(objectMapper.writeValueAsString(responseMap));
-                        }))
-        .csrf(csrf -> csrf.disable()); // Temporarily disable CSRF for easier testing
+                        }));
 
     return http.build();
   }
@@ -87,11 +123,12 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(Arrays.asList("http://localhost:53551"));
+    // 플러터 웹의 모든 출처 허용 (Credentials 포함 시 AllowedOriginPatterns 사용 필수)
+    config.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(Arrays.asList("*"));
     config.setExposedHeaders(Arrays.asList("Set-Cookie"));
-    config.setAllowCredentials(true);
+    config.setAllowCredentials(true); // 쿠키 허용
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);

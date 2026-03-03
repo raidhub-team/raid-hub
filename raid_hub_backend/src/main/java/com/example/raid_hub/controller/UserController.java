@@ -9,15 +9,38 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // 플러터(웹)에서 접근 허용 (CORS)
 public class UserController {
 
   private final UserService userService;
+
+  @GetMapping("/me")
+  public ResponseEntity<Map<String, Object>> getCurrentUser(Authentication authentication) {
+    Map<String, Object> response = new HashMap<>();
+    if (authentication != null && authentication.isAuthenticated()) {
+      response.put("authenticated", true);
+      response.put("username", authentication.getName());
+
+      String role =
+          authentication.getAuthorities().stream()
+              .map(GrantedAuthority::getAuthority)
+              .findFirst()
+              .orElse("ROLE_USER")
+              .replace("ROLE_", "");
+
+      response.put("role", role);
+      return ResponseEntity.ok(response);
+    }
+
+    response.put("authenticated", false);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+  }
 
   @PostMapping("/register")
   public ResponseEntity<Map<String, Object>> registerUser(

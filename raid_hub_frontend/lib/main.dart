@@ -52,6 +52,8 @@ class _HomePageState extends State<HomePage> {
   // Data
   List<dynamic> _allContent = []; // RaidVideo + PlaylistItem
   List<dynamic> _filteredContent = [];
+  List<dynamic> _blockedContent = []; // 차단된 영상 목록 (PlaylistItem)
+  List<String> _blockedVideoIds = []; // 차단된 영상 ID 목록
 
   // Loading State
   bool _isLoading = true;
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
         'PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1'  // 김상드
       ];
 
-      List<Future> futures = [_apiService.getVideos()];
+      List<Future> futures = [_apiService.getVideos(), _apiService.getBlockedVideoIds()];
       for (final playlistId in playlistIds) {
         futures.add(_apiService.getPlaylistItems(playlistId));
       }
@@ -116,13 +118,18 @@ class _HomePageState extends State<HomePage> {
       if (mounted) {
         setState(() {
           final raidVideos = results[0] as List<RaidVideo>;
+          _blockedVideoIds = results[1] as List<String>; // 차단 목록 저장
           final playlistItems = results
-              .sublist(1)
+              .sublist(2)
               .expand((items) => items as List<PlaylistItem>)
               .toList();
+          
+          // 차단된 영상 필터링 및 별도 저장
+          _blockedContent = playlistItems.where((item) => _blockedVideoIds.contains(item.videoId)).toList();
+          final filteredPlaylistItems = playlistItems.where((item) => !_blockedVideoIds.contains(item.videoId)).toList();
 
           // 두 리스트를 합칩니다.
-          _allContent = [...raidVideos, ...playlistItems];
+          _allContent = [...raidVideos, ...filteredPlaylistItems];
           _isLoading = false;
         });
       }
@@ -136,8 +143,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _refreshVideos() {
-    _loadData();
+  Future<void> _refreshVideos() async {
+    await _loadData();
   }
 
   void _applyFilters() {
@@ -229,6 +236,14 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Lost Ark Raid Hub'),
         actions: [
           // 관리자 로그인 버튼
+          if (authService.isAdmin)
+            IconButton(
+              icon: const Icon(Icons.visibility_off), // 눈 가림 아이콘 (숨긴 목록)
+              tooltip: '숨긴 영상 관리',
+              onPressed: () {
+                _showBlockedVideosDialog();
+              },
+            ),
           IconButton(
             icon: Icon(authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings),
             tooltip: authService.isAuthenticated ? '로그아웃' : '관리자 로그인',
@@ -434,64 +449,121 @@ class _HomePageState extends State<HomePage> {
 
   // 플레이리스트 카드 위젯 (유튜브 API 데이터)
   Widget _buildPlaylistCard(PlaylistItem item) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VideoPlayerScreen(videoId: item.videoId),
+      child: Stack(
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VideoPlayerScreen(videoId: item.videoId),
+                ),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: item.thumbnailUrl.isNotEmpty
+                      ? Image.network(item.thumbnailUrl, fit: BoxFit.cover,
+                          errorBuilder: (ctx, _, __) => Container(
+                              color: Colors.grey,
+                              child: const Icon(Icons.broken_image)))
+                      : Container(
+                          color: Colors.black12,
+                          child: const Icon(Icons.videocam, size: 50)),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          item.channelTitle,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.secondary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.publishedAt,
+                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: item.thumbnailUrl.isNotEmpty
-                  ? Image.network(item.thumbnailUrl, fit: BoxFit.cover,
-                      errorBuilder: (ctx, _, __) => Container(
-                          color: Colors.grey,
-                          child: const Icon(Icons.broken_image)))
-                  : Container(
-                      color: Colors.black12,
-                      child: const Icon(Icons.videocam, size: 50)),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.channelTitle,
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.secondary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.publishedAt,
-                      style: const TextStyle(fontSize: 11, color: Colors.grey),
-                    ),
-                  ],
+          ),
+          if (authService.isAdmin)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.visibility_off, color: Colors.orangeAccent, size: 20),
+                  tooltip: '이 영상 숨기기',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text("영상 숨기기"),
+                        content: const Text("이 영상을 목록에서 숨기시겠습니까?\n(새로고침 후 적용됩니다)"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: const Text("취소"),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              try {
+                                await _apiService.blockVideo(item.videoId, "관리자 숨김 처리");
+                                if (mounted) {
+                                  Navigator.pop(ctx); // 성공 후에 팝업 닫기
+                                  _refreshVideos(); // 목록 새로고침
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("영상이 숨김 처리되었습니다.")),
+                                  );
+                                }
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("숨김 실패: $e")),
+                                  );
+                                }
+                              }
+                            },
+                            child: const Text("숨기기", style: TextStyle(color: Colors.orange)),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -516,6 +588,62 @@ class _HomePageState extends State<HomePage> {
       return "https://img.youtube.com/vi/$videoId/mqdefault.jpg";
     }
     return null;
+  }
+
+  void _showBlockedVideosDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('숨겨진 영상 목록'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: _blockedContent.isEmpty
+              ? const Center(child: Text("숨겨진 영상이 없습니다."))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _blockedContent.length,
+                  itemBuilder: (context, index) {
+                    final item = _blockedContent[index] as PlaylistItem;
+                    return ListTile(
+                      leading: Image.network(
+                        item.thumbnailUrl,
+                        width: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, _, __) => const Icon(Icons.broken_image),
+                      ),
+                      title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(item.channelTitle),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.restore, color: Colors.green),
+                        tooltip: '영상 복구',
+                          onPressed: () async {
+                            try {
+                              await _apiService.unblockVideo(item.videoId);
+                              if (mounted) {
+                                Navigator.pop(context); // API 성공 후에 팝업 닫기
+                                _refreshVideos(); // 전체 목록 새로고침
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("영상이 복구되었습니다.")),
+                                );
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("복구 실패: $e")),
+                                );
+                              }
+                            }
+                          },
+                      ),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('닫기')),
+        ],
+      ),
+    );
   }
 
   void _showAddVideoDialog() {
