@@ -5,6 +5,7 @@ class PlaylistItem {
   final String thumbnailUrl;
   final int position;
   final String publishedAt;
+  final String? playlistId;
 
   PlaylistItem({
     required this.videoId,
@@ -13,6 +14,7 @@ class PlaylistItem {
     required this.thumbnailUrl,
     required this.position,
     required this.publishedAt,
+    this.playlistId,
   });
 
   factory PlaylistItem.fromJson(Map<String, dynamic> json) {
@@ -27,4 +29,24 @@ class PlaylistItem {
   }
 
   String get youtubeUrl => 'https://www.youtube.com/watch?v=$videoId';
+
+  PlaylistItem copyWith({
+    String? videoId,
+    String? title,
+    String? channelTitle,
+    String? thumbnailUrl,
+    int? position,
+    String? publishedAt,
+    String? playlistId,
+  }) {
+    return PlaylistItem(
+      videoId: videoId ?? this.videoId,
+      title: title ?? this.title,
+      channelTitle: channelTitle ?? this.channelTitle,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
+      position: position ?? this.position,
+      publishedAt: publishedAt ?? this.publishedAt,
+      playlistId: playlistId ?? this.playlistId,
+    );
+  }
 }

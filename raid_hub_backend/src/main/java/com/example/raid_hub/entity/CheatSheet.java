@@ -33,8 +33,7 @@ public class CheatSheet {
   @Column(nullable = false)
   private String gate; // 관문 (1관문, 2관문, 전체 등)
 
-  @NotBlank
-  @Column(nullable = false)
+  @Column(nullable = true)
   private String uploaderName; // 작성자 이름
 
   @NotBlank

@@ -1,21 +1,3 @@
-lib/main.dart:42:1: Error: Directives must appear before any declarations.
-Try moving the directive before any declarations.
-import 'package:flutter/foundation.dart'; // Import kIsWeb
-^^^^^^
-lib/main.dart:43:1: Error: Directives must appear before any declarations.
-Try moving the directive before any declarations.
-import 'package:file_picker/file_picker.dart'; // Import FilePicker
-^^^^^^
-lib/main.dart:44:1: Error: Directives must appear before any declarations.
-Try moving the directive before any declarations.
-import 'models/cheat_sheet.dart'; // Import CheatSheet model
-^^^^^^
-lib/main.dart:415:10: Error: '_buildGuideKeywordFilters' is already declared in this scope.
-  Widget _buildGuideKeywordFilters() {
-         ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/main.dart:264:10: Context: Previous declaration of '_buildGuideKeywordFilters'.
-  Widget _buildGuideKeywordFilters() {
-         ^^^^^^^^^^^^^^^^^^^^^^^^^
-lib/main.dart:241:17: Error: Can't use '_buildGuideKeywordFilters' because it is declared more than once.
-                _buildGuideKeywordFilters(),
-                ^
+Upload failed: {"timestamp":"2026-03-07T12:07:32.442+00:00","status":500,"error":"Internal Server
+Error","path":"/api/cheatsheets"}
+Error uploading cheat sheet: Exception: Upload failed: 500

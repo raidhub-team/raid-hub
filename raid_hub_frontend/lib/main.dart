@@ -88,6 +88,7 @@ class _HomePageState extends State<HomePage> {
 
   final Map<String, List<String>> _raidByCategory = {
     '군단장 레이드': ['발탄', '비아키스', '쿠크세이튼', '아브렐슈드', '일리아칸', '카멘'],
+    '어비스 레이드': ['카양겔', '상아탑'],
     '에픽 레이드': ['베히모스'],
     '카제로스 레이드': ['(서막)에키드나', '(1막)에기르', '(2막)아브렐슈드', '(3막)모르둠', '(4막)아르모체', '(종막)카제로스'],
     '그림자 레이드': ['세르카'],
@@ -113,12 +114,21 @@ class _HomePageState extends State<HomePage> {
     try {
       const List<String> playlistIds = [
         'PLfeapZwXytc5hLWufxWTGOZsF9Hx_IsVa', // 꿀맹이는 여왕님 로스트아크 공략
+//         'PLfeapZwXytc5DFYMsAnyvRKes3Z-WU0CM', // 꿀맹이는 여왕님 로스트아크 싱글 모드 공략
         'PLMAYHL7_2pknWRmpGLK6kbsit75Vu4YC0', // 바보온돌 싱글모드 공략
         'PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc', // 바보온돌 헬/시련 공략
         'PLMAYHL7_2pknM3ZUjR68XASaXnOPKy2gB', // 바보온돌 어비스 레이드
         'PLMAYHL7_2pkkhJVv05QgpN8ZIb5AjzGZf', // 바보온돌 군단장 레이드
         'PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1', // 김상드 로스트아크 공략
-        'PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX' // 바보온돌 완전공략
+        'PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX', // 바보온돌 완전공략
+        'PLSC2n1C_PEtvzu_S0z34-5zi2F_Sw16L1', // 레붕튜브 어둠의 바라트론(카멘)공략
+        'PLSC2n1C_PEtveUZ0OW8s_xr9D9SvkJhRY', // 레붕튜브 카제로스 레이드 서막, 에키드나 공략
+        'PLSC2n1C_PEttT5QCVgT4ZHUMCjLj6B2P3', // 레붕튜브 카제로스 레이드 1막, 에기르 공략
+        'PLSC2n1C_PEtskqCw5bBd6HY31pGkVOwL7', // 레붕튜브 카제로스 레이드 2막 공략
+        'PLSC2n1C_PEtuqxHJZHXioB5XQB9gDmtcn', // 레붕튜브 카제로스 레이드 3막 공략
+        'PLSC2n1C_PEtuf2vA_GbhvXD-8S7fMw-Tu', // 레붕튜브 카제로스 레이드 4막 공략
+        'PLSC2n1C_PEtu1XQJpHbqQ3B9d0qF0_PS1', // 레붕튜브 카제로스 레이드 종막 공략
+        'PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm' // 레붕튜브 로아 이것저것 설명
       ];
 
       List<Future> futures = [
@@ -138,14 +148,15 @@ class _HomePageState extends State<HomePage> {
           _blockedVideoIds = results[1] as List<String>;
           _allCheatSheets = results[2] as List<CheatSheet>;
 
-          final playlistItems = results
-              .sublist(3)
-              .expand((items) => items as List<PlaylistItem>)
-              .toList();
-          
+          final List<PlaylistItem> playlistItems = [];
+          for (int i = 0; i < playlistIds.length; i++) {
+            final items = results[i + 3] as List<PlaylistItem>;
+            final playlistId = playlistIds[i];
+            playlistItems.addAll(items.map((item) => item.copyWith(playlistId: playlistId)));
+          }
+
           _blockedContent = playlistItems.where((item) => _blockedVideoIds.contains(item.videoId)).toList();
           final filteredPlaylistItems = playlistItems.where((item) => !_blockedVideoIds.contains(item.videoId)).toList();
-
           _allContent = [...raidVideos, ...filteredPlaylistItems];
           _isLoading = false;
         });
@@ -169,15 +180,26 @@ class _HomePageState extends State<HomePage> {
 
       // 키워드 필터 적용
       bool matchesKeyword = false;
+
+      // 특정 플레이리스트 (기타 분류) 처리
+      bool isEtcPlaylist = (item is PlaylistItem && item.playlistId == 'PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm');
+
       if (_selectedGuideKeyword == '전체') {
         matchesKeyword = true;
       } else if (_selectedGuideKeyword == '기타') {
-        final keywords = _guideKeywords.where((k) => k != '전체' && k != '기타').toList();
-        bool isKnown = keywords.any((k) => 
-            title.contains(k) || 
-            raidName == k || 
-            (_keywordMapping[k] != null && title.contains(_keywordMapping[k]!)));
-        matchesKeyword = !isKnown;
+        if (isEtcPlaylist) {
+          matchesKeyword = true;
+        } else {
+          final keywords = _guideKeywords.where((k) => k != '전체' && k != '기타').toList();
+          bool isKnown = keywords.any((k) => 
+              title.contains(k) || 
+              raidName == k || 
+              (_keywordMapping[k] != null && title.contains(_keywordMapping[k]!)));
+          matchesKeyword = !isKnown;
+        }
+      } else if (isEtcPlaylist) {
+        // 기타 플레이리스트는 '전체' 또는 '기타' 외의 카테고리에는 표시 안 함
+        matchesKeyword = false;
       } else {
         DateTime? videoDate;
         if (item is PlaylistItem) {
@@ -281,6 +303,13 @@ class _HomePageState extends State<HomePage> {
       } else if (_selectedGuideKeyword == '기타') {
         final keywords = _guideKeywords.where((k) => k != '전체' && k != '기타').toList();
         matchesKeyword = !keywords.any((k) => cs.raidName.contains(k) || cs.title.contains(k));
+      } else if (_selectedGuideKeyword == '2막') {
+        // '2막'의 경우, 단순 '아브렐슈드'가 아닌 '2막' 키워드가 명시적으로 있어야 함
+        matchesKeyword = cs.raidName.contains('2막') || cs.title.contains('2막') || cs.gate.contains('2막');
+      } else if (_selectedGuideKeyword == '아브렐슈드') {
+        // '아브렐슈드' 탭에서는 '2막'이 포함된 것을 제외 (기존 군단장 아브렐슈드만)
+        matchesKeyword = (cs.raidName.contains('아브렐슈드') || cs.title.contains('아브렐슈드')) &&
+            !(cs.raidName.contains('2막') || cs.title.contains('2막') || cs.gate.contains('2막'));
       } else {
         final term = _keywordMapping[_selectedGuideKeyword] ?? _selectedGuideKeyword;
         matchesKeyword = cs.raidName.contains(term) || cs.title.contains(term);
@@ -493,14 +522,35 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => Dialog.fullscreen(
         backgroundColor: Colors.black,
-        child: Stack(
-          children: [
-            Center(child: InteractiveViewer(child: Image.network(cs.fullImageUrl))),
-            Positioned(
-              top: 20, left: 20,
-              child: IconButton(icon: const Icon(Icons.close, color: Colors.white, size: 30), onPressed: () => Navigator.pop(context)),
-            ),
-          ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Center(child: InteractiveViewer(child: Image.network(cs.fullImageUrl))),
+                    Positioned(
+                      top: 10, left: 10,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white, size: 30), 
+                        onPressed: () => Navigator.pop(context)
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                color: Colors.black87,
+                child: Text(
+                  '출처: ${cs.uploaderName}',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -512,13 +562,13 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => CheatSheetUploadDialog(
         raidByCategory: _raidByCategory,
-        onUpload: (title, raid, gate, bytes, name) async {
+        onUpload: (title, raid, gate, uploaderName, bytes, name) async {
           try {
             await _apiService.uploadCheatSheet(
               title: title, 
               raidName: raid, 
               gate: gate, 
-              uploaderName: authService.username ?? 'admin', // Use username or fallback
+              uploaderName: uploaderName.isNotEmpty ? uploaderName : (authService.username ?? 'admin'), // 입력받은 값 우선, 없으면 로그인 유저명
               fileBytes: bytes, 
               fileName: name
             );
@@ -1012,7 +1062,7 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
 
 class CheatSheetUploadDialog extends StatefulWidget {
   final Map<String, List<String>> raidByCategory;
-  final Function(String, String, String, List<int>, String) onUpload;
+  final Function(String, String, String, String, List<int>, String) onUpload;
 
   const CheatSheetUploadDialog({
     super.key,
@@ -1031,6 +1081,7 @@ class _CheatSheetUploadDialogState extends State<CheatSheetUploadDialog> {
   String? _selectedRaidName;
   final _titleController = TextEditingController();
   final _gateController = TextEditingController(text: '전체');
+  final _uploaderController = TextEditingController();
 
   PlatformFile? _pickedFile;
 
@@ -1102,6 +1153,11 @@ class _CheatSheetUploadDialogState extends State<CheatSheetUploadDialog> {
                 decoration: const InputDecoration(labelText: '관문 (예: 1관문, 전체)'),
                 validator: (val) => val!.isEmpty ? '관문을 입력하세요' : null,
               ),
+              TextFormField(
+                controller: _uploaderController,
+                decoration: const InputDecoration(labelText: '출처 (작성자/사이트명 등)'),
+                // 출처는 선택사항으로 둘 수 있으나, 빈 값이면 부모에서 처리하므로 validator는 생략가능
+              ),
             ],
           ),
         ),
@@ -1115,6 +1171,7 @@ class _CheatSheetUploadDialogState extends State<CheatSheetUploadDialog> {
                 _titleController.text,
                 _selectedRaidName!,
                 _gateController.text,
+                _uploaderController.text,
                 _pickedFile!.bytes!,
                 _pickedFile!.name,
               );
