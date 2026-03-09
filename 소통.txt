@@ -6,42 +6,5 @@ Read more: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
     at flutter_bootstrap.js:40:17
 (anonymous) @ flutter_bootstrap.js:31
 main.dart.js:26971 Starting fresh: Always logged out on entry.
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/blocked-videos' from origin 'http://20.89.237.161' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/blocked-videos:1  Failed to load resource: net::ERR_FAILED
-main.dart.js:26971 Error fetching blocked video IDs: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/blocked-videos
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknWRmpGLK6kbsit75Vu4YC0&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknWRmpGLK6kbsit75Vu4YC0&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/cheatsheets' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/cheatsheets:1  Failed to load resource: net::ERR_FAILED
-main.dart.js:26971 Error fetching cheat sheets: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/cheatsheets
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLfeapZwXytc5hLWufxWTGOZsF9Hx_IsVa&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLfeapZwXytc5hLWufxWTGOZsF9Hx_IsVa&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/videos' from origin 'http://20.89.237.161' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/videos:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pkkhJVv05QgpN8ZIb5AjzGZf&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pkkhJVv05QgpN8ZIb5AjzGZf&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknM3ZUjR68XASaXnOPKy2gB&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknM3ZUjR68XASaXnOPKy2gB&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtveUZ0OW8s_xr9D9SvkJhRY&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtveUZ0OW8s_xr9D9SvkJhRY&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtvzu_S0z34-5zi2F_Sw16L1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtvzu_S0z34-5zi2F_Sw16L1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEttT5QCVgT4ZHUMCjLj6B2P3&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEttT5QCVgT4ZHUMCjLj6B2P3&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtskqCw5bBd6HY31pGkVOwL7&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtskqCw5bBd6HY31pGkVOwL7&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuqxHJZHXioB5XQB9gDmtcn&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuqxHJZHXioB5XQB9gDmtcn&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuf2vA_GbhvXD-8S7fMw-Tu&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuf2vA_GbhvXD-8S7fMw-Tu&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtu1XQJpHbqQ3B9d0qF0_PS1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtu1XQJpHbqQ3B9d0qF0_PS1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
-main.dart.js:26971 데이터 로딩 중 에러 발생: Exception: Error fetching playlist items: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true
+main.dart.js:29884 Could not find a set of Noto fonts to display all missing characters. Please add a font asset for the missing characters. See: https://flutter.dev/docs/cookbook/design/fonts
+$1 @ main.dart.js:29884

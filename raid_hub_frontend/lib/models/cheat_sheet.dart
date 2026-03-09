@@ -30,5 +30,5 @@ class CheatSheet {
   }
 
   // Full URL helper (Base URL should be appended)
-  String get fullImageUrl => 'http://localhost:8080$imageUrl';
+  String get fullImageUrl => 'http://20.89.237.161$imageUrl';
 }
