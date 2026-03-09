@@ -18,7 +18,7 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
   static const String _sessionIdKey = 'session_id';
   static const String _usernameKey = 'username';
 
-  final String _baseUrl = 'http://20.89.237.161:8080';
+  final String _baseUrl = 'http://20.89.237.161';
 
   bool get isAuthenticated => _sessionCookie != null;
   String? get username => _username;

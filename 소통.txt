@@ -1,50 +1,47 @@
-2026/03/07 14:56:29 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 14:56:29 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 14:56:30 [error] 8646#8646: *46 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET /login HTTP/1.1", upstream: "http://127.0.0.1:8080/login", host: "20.89.237.161"
-2026/03/07 14:56:30 [error] 8646#8646: *46 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/login"
-2026/03/07 14:56:34 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /login HTTP/1.1", upstream: "http://127.0.0.1:8080/login", host: "20.89.237.161"
-2026/03/07 14:56:34 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/login"
-2026/03/07 14:56:36 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 14:56:36 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 14:59:56 [error] 8646#8646: *70 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 14:59:56 [error] 8646#8646: *70 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 15:00:10 [error] 8647#8647: *74 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:00:10 [error] 8647#8647: *74 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 15:05:52 [error] 8647#8647: *80 connect() failed (111: Connection refused) while connecting to upstream, client: 27.0.238.182, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:14:22 [error] 8647#8647: *85 connect() failed (111: Connection refused) while connecting to upstream, client: 27.0.238.186, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:21:16 [error] 8647#8647: *87 connect() failed (111: Connection refused) while connecting to upstream, client: 175.204.15.251, server: _, request: "GET / HTTP/1.0", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/08 03:44:28 [error] 8647#8647: *9519 client intended to send too large chunked body: 0+2863311530 bytes, client: 74.249.245.101, server: _, request: "GET /qualys_chunk_test HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:37:37 [error] 35822#35822: *1 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:37:37 [error] 35821#35821: *2 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/08 08:37:43 [error] 35822#35822: *3 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 211.117.24.132, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161", referrer: "https://www.google.com/"
-2026/03/08 08:37:43 [error] 35822#35822: *4 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 211.117.24.132, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-vmfhdirn2@raid-hub:~$ ls -l /home/vmfhdirn2/raid-hub/front-web/index.html
--rw-rw-r-- 1 vmfhdirn2 vmfhdirn2 1253 Mar  8 08:28 /home/vmfhdirn2/raid-hub/front-web/index.html
-vmfhdirn2@raid-hub:~$ try_files $uri $uri/ /index.html;
-try_files: command not found
-vmfhdirn2@raid-hub:~$ sudo chmod 755 /home/vmfhdirn2
-vmfhdirn2@raid-hub:~$ sudo chmod 755 /home/vmfhdirn2/raid-hub
-vmfhdirn2@raid-hub:~$ sudo chmod 755 /home/vmfhdirn2/raid-hub/frontend-web
-chmod: cannot access '/home/vmfhdirn2/raid-hub/frontend-web': No such file or directory
-vmfhdirn2@raid-hub:~$ sudo chmod 755 /home/vmfhdirn2/raid-hub/front-web
-vmfhdirn2@raid-hub:~$ sudo tail -n 20 /var/log/nginx/error.log
-2026/03/07 14:56:34 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /login HTTP/1.1", upstream: "http://127.0.0.1:8080/login", host: "20.89.237.161"
-2026/03/07 14:56:34 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/login"
-2026/03/07 14:56:36 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 14:56:36 [error] 8646#8646: *50 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 14:59:56 [error] 8646#8646: *70 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 14:59:56 [error] 8646#8646: *70 connect() failed (111: Connection refused) while connecting to upstream, client: 116.121.13.59, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 15:00:10 [error] 8647#8647: *74 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:00:10 [error] 8647#8647: *74 connect() failed (111: Connection refused) while connecting to upstream, client: 122.44.251.243, server: _, request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/07 15:05:52 [error] 8647#8647: *80 connect() failed (111: Connection refused) while connecting to upstream, client: 27.0.238.182, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:14:22 [error] 8647#8647: *85 connect() failed (111: Connection refused) while connecting to upstream, client: 27.0.238.186, server: _, request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/07 15:21:16 [error] 8647#8647: *87 connect() failed (111: Connection refused) while connecting to upstream, client: 175.204.15.251, server: _, request: "GET / HTTP/1.0", upstream: "http://127.0.0.1:8080/", host: "20.89.237.161"
-2026/03/08 03:44:28 [error] 8647#8647: *9519 client intended to send too large chunked body: 0+2863311530 bytes, client: 74.249.245.101, server: _, request: "GET /qualys_chunk_test HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:37:37 [error] 35822#35822: *1 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:37:37 [error] 35821#35821: *2 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/08 08:37:43 [error] 35822#35822: *3 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 211.117.24.132, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161", referrer: "https://www.google.com/"
-2026/03/08 08:37:43 [error] 35822#35822: *4 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 211.117.24.132, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/08 08:40:31 [error] 35822#35822: *7 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:40:32 [error] 35822#35822: *8 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
-2026/03/08 08:40:32 [error] 35822#35822: *9 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET / HTTP/1.1", host: "20.89.237.161"
-2026/03/08 08:40:32 [error] 35822#35822: *10 rewrite or internal redirection cycle while internally redirecting to "/index.html", client: 125.177.73.234, server: 20.89.237.161, request: "GET /favicon.ico HTTP/1.1", host: "20.89.237.161", referrer: "http://20.89.237.161/"
+flutter_bootstrap.js:31 Exception while loading service worker: Error: Service Worker API unavailable.
+The current context is NOT secure.
+Read more: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+    at g.loadServiceWorker (flutter_bootstrap.js:3:99)
+    at S.load (flutter_bootstrap.js:31:1133)
+    at flutter_bootstrap.js:40:17
+(anonymous) @ flutter_bootstrap.js:31
+main.dart.js:26971 Starting fresh: Always logged out on entry.
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/blocked-videos' from origin 'http://20.89.237.161' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/blocked-videos:1  Failed to load resource: net::ERR_FAILED
+main.dart.js:26971 Error fetching blocked video IDs: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/blocked-videos
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknWRmpGLK6kbsit75Vu4YC0&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknWRmpGLK6kbsit75Vu4YC0&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/cheatsheets' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/cheatsheets:1  Failed to load resource: net::ERR_FAILED
+main.dart.js:26971 Error fetching cheat sheets: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/cheatsheets
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLfeapZwXytc5hLWufxWTGOZsF9Hx_IsVa&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLfeapZwXytc5hLWufxWTGOZsF9Hx_IsVa&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/videos' from origin 'http://20.89.237.161' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/videos:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pkkhJVv05QgpN8ZIb5AjzGZf&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pkkhJVv05QgpN8ZIb5AjzGZf&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknM3ZUjR68XASaXnOPKy2gB&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknM3ZUjR68XASaXnOPKy2gB&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLQMXZuhZUJEBkcXgn9XPb_3xmMXpbXsy1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknYPEMC7wcP1WFINEfCS9xX&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtveUZ0OW8s_xr9D9SvkJhRY&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtveUZ0OW8s_xr9D9SvkJhRY&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtvzu_S0z34-5zi2F_Sw16L1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtvzu_S0z34-5zi2F_Sw16L1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEttT5QCVgT4ZHUMCjLj6B2P3&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEttT5QCVgT4ZHUMCjLj6B2P3&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtskqCw5bBd6HY31pGkVOwL7&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtskqCw5bBd6HY31pGkVOwL7&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuqxHJZHXioB5XQB9gDmtcn&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuqxHJZHXioB5XQB9gDmtcn&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuf2vA_GbhvXD-8S7fMw-Tu&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtuf2vA_GbhvXD-8S7fMw-Tu&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtu1XQJpHbqQ3B9d0qF0_PS1&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtu1XQJpHbqQ3B9d0qF0_PS1&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+(index):1 Access to fetch at 'http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm&fetchAll=true' from origin 'http://20.89.237.161' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+:8080/api/youtube/playlist-items?playlistId=PLSC2n1C_PEtut5Q3C0NTDBkiclH2Xqctm&fetchAll=true:1  Failed to load resource: net::ERR_FAILED
+main.dart.js:26971 데이터 로딩 중 에러 발생: Exception: Error fetching playlist items: ClientException: Failed to fetch, uri=http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=PLMAYHL7_2pknNJ_VXH3jd-YtSZq13CBxc&fetchAll=true

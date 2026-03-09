@@ -7,8 +7,8 @@ import '../models/cheat_sheet.dart'; // Import CheatSheet model
 import 'package:raid_hub_frontend/services/auth_service.dart'; // Import AuthService
 
 class ApiService {
-  final String baseUrl = "http://20.89.237.161:8080/api/videos";
-  final String _apiBaseUrl = "http://20.89.237.161:8080/api"; // Added base API URL
+  final String baseUrl = "http://20.89.237.161/api/videos";
+  final String _apiBaseUrl = "http://20.89.237.161/api"; // Added base API URL
   final AuthService _authService = AuthService(); // Get the AuthService instance
   final http.Client _client = BrowserClient()..withCredentials = true;
 
@@ -208,7 +208,7 @@ class ApiService {
   Future<List<PlaylistItem>> getPlaylistItems(String playlistId) async {
     try {
       final response = await _client.get(
-        Uri.parse('http://20.89.237.161:8080/api/youtube/playlist-items?playlistId=$playlistId&fetchAll=true'),
+        Uri.parse('http://20.89.237.161/api/youtube/playlist-items?playlistId=$playlistId&fetchAll=true'),
       );
 
       if (response.statusCode == 200) {
