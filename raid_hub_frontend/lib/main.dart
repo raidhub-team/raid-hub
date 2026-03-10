@@ -6,6 +6,7 @@ import 'models/playlist_item.dart';
 import 'models/cheat_sheet.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
+import 'providers/theme_provider.dart';
 import 'screens/login_screen.dart';
 import 'widgets/skeleton_ui.dart';
 import 'widgets/cheat_sheet_card.dart';
@@ -18,8 +19,11 @@ Future<void> main() async {
   await authService.initialize();
 
   runApp(
-    ChangeNotifierProvider.value(
-      value: authService,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: authService),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
       child: const RaidHubApp(),
     ),
   );
@@ -30,9 +34,19 @@ class RaidHubApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'Lost Ark Raid Hub',
+      themeMode: themeProvider.themeMode,
       theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blueGrey,
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blueGrey,
@@ -59,6 +73,10 @@ class _HomePageState extends State<HomePage> {
   String _selectedGuideKeyword = '전체';
   String _searchQuery = '';
   String _sortOption = '최신순'; // '최신순', '제목순'
+  // 드롭다운에서 선택된 대분류/소분류 상태
+  String _selectedCategory = '전체 레이드';
+  String _selectedRaid = '전체';
+
   final _searchController = TextEditingController();
 
   // Data - Videos
@@ -74,9 +92,10 @@ class _HomePageState extends State<HomePage> {
   // Loading State
   bool _isLoading = true;
 
+  // 기존 필터 로직에서 사용하던 변수 유지 (드롭다운과 연동)
   final List<String> _guideKeywords = [
     '전체', '발탄', '비아키스', '쿠크세이튼', '아브렐슈드', '일리아칸', '카멘', 
-    '카양겔', '상아탑', '베히모스', '서막', '1막', '2막', '3막', '4막', '종막', '세르카', '기타'
+    '카양겔', '상아탑', '베히모스', '서막', '1막', '2막', '3막', '4막', '종막', '세르카', '로아 유용한 팁'
   ];
 
   final Map<String, String> _keywordMapping = {
@@ -88,6 +107,17 @@ class _HomePageState extends State<HomePage> {
     '종막': '카제로스',
   };
 
+  // 드롭다운 표시용 카테고리
+  final Map<String, List<String>> _dropdownCategory = {
+    '전체 레이드': ['전체', '로아 유용한 팁'],
+    '군단장 레이드': ['전체', '발탄', '비아키스', '쿠크세이튼', '아브렐슈드', '일리아칸', '카멘'],
+    '어비스 레이드': ['전체', '카양겔', '상아탑'],
+    '에픽 레이드': ['전체', '베히모스'],
+    '카제로스 레이드': ['전체', '(서막)에키드나', '(1막)에기르', '(2막)아브렐슈드', '(3막)모르둠', '(4막)아르모체', '(종막)카제로스'],
+    '그림자 레이드': ['전체', '세르카'],
+  };
+
+  // 등록 팝업용 카테고리 (기존 유지)
   final Map<String, List<String>> _raidByCategory = {
     '군단장 레이드': ['발탄', '비아키스', '쿠크세이튼', '아브렐슈드', '일리아칸', '카멘'],
     '어비스 레이드': ['카양겔', '상아탑'],
@@ -182,11 +212,11 @@ class _HomePageState extends State<HomePage> {
 
       if (_selectedGuideKeyword == '전체') {
         matchesKeyword = true;
-      } else if (_selectedGuideKeyword == '기타') {
+      } else if (_selectedGuideKeyword == '로아 유용한 팁') {
         if (isEtcPlaylist) {
           matchesKeyword = true;
         } else {
-          final keywords = _guideKeywords.where((k) => k != '전체' && k != '기타').toList();
+          final keywords = _guideKeywords.where((k) => k != '전체' && k != '로아 유용한 팁').toList();
           bool isKnown = keywords.any((k) => 
               title.contains(k) || 
               raidName == k || 
@@ -286,8 +316,8 @@ class _HomePageState extends State<HomePage> {
       bool matchesKeyword = false;
       if (_selectedGuideKeyword == '전체') {
         matchesKeyword = true;
-      } else if (_selectedGuideKeyword == '기타') {
-        final keywords = _guideKeywords.where((k) => k != '전체' && k != '기타').toList();
+      } else if (_selectedGuideKeyword == '로아 유용한 팁') {
+        final keywords = _guideKeywords.where((k) => k != '전체' && k != '로아 유용한 팁').toList();
         matchesKeyword = !keywords.any((k) => cs.raidName.contains(k) || cs.title.contains(k));
       } else if (_selectedGuideKeyword == '2막') {
         matchesKeyword = cs.raidName.contains('2막') || cs.title.contains('2막') || cs.gate.contains('2막');
@@ -345,7 +375,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
               children: [
                 _buildSearchAndSortBar(),
-                _buildGuideKeywordFilters(),
+                _buildDropdownFilters(), // 가로 스크롤 대신 드롭다운 사용
                 Expanded(
                   child: _isLoading 
                     ? _buildSkeletonGrid() 
@@ -439,23 +469,96 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildGuideKeywordFilters() {
+  Widget _buildDropdownFilters() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Wrap(
-        spacing: 8.0,
-        runSpacing: 4.0,
-        children: _guideKeywords.map((keyword) {
-          return ChoiceChip(
-            label: Text(keyword),
-            selected: _selectedGuideKeyword == keyword,
-            onSelected: (selected) {
-              if (selected) setState(() => _selectedGuideKeyword = keyword);
-            },
-          );
-        }).toList(),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedCategory,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  items: _dropdownCategory.keys.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category, style: const TextStyle(fontSize: 14)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                        _selectedRaid = '전체';
+                        _updateGuideKeywordFromDropdown();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 3,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedRaid,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  items: _dropdownCategory[_selectedCategory]!.map((String raid) {
+                    return DropdownMenuItem<String>(
+                      value: raid,
+                      child: Text(raid, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedRaid = newValue;
+                        _updateGuideKeywordFromDropdown();
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  // 드롭다운 선택값을 기존의 _selectedGuideKeyword로 변환하는 함수 (필터 로직 보존의 핵심)
+  void _updateGuideKeywordFromDropdown() {
+    if (_selectedRaid == '전체') {
+       _selectedGuideKeyword = '전체'; // 대분류의 전체는 우선 '전체'로 처리
+    } else if (_selectedRaid.contains('(')) {
+       // 카제로스 레이드 '(서막)에키드나' -> '서막' 추출
+       RegExp regex = RegExp(r'\((.*?)\)');
+       Match? match = regex.firstMatch(_selectedRaid);
+       if (match != null) {
+          _selectedGuideKeyword = match.group(1)!;
+       }
+    } else {
+       _selectedGuideKeyword = _selectedRaid;
+    }
   }
 
   Widget _buildVideosGrid() {
