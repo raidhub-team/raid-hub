@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/auth_service.dart'; // 추가: 인증 서비스
+import 'login_screen.dart'; // 추가: 로그인 화면
 import '../main.dart'; // To access HomePage
 
 /// [LandingScreen]
@@ -12,17 +14,16 @@ class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final authService = Provider.of<AuthService>(context); // 추가: 인증 서비스
     final isDark = themeProvider.isDarkMode;
 
     return Scaffold(
       body: Stack(
         children: [
-          // 1. 배경 이미지 (로컬 에셋)
+          // 1. 배경 이미지
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                // assets/images/ 폴더 안에 있는 이미지를 불러옵니다.
-                // 이미지 이름이 다르다면 이 부분을 수정해 주세요!
                 image: const AssetImage('assets/images/landing_bg.jpg'), 
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
@@ -33,17 +34,37 @@ class LandingScreen extends StatelessWidget {
             ),
           ),
 
-          // 2. 상단 우측 다크/라이트 모드 토글 버튼
+          // 2. 상단 우측 버튼들 (다크모드 & 로그인)
           Positioned(
             top: 40,
             right: 20,
-            child: IconButton(
-              icon: Icon(
-                isDark ? Icons.light_mode : Icons.dark_mode,
-                color: Colors.white,
-                size: 30,
-              ),
-              onPressed: () => themeProvider.toggleTheme(),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    isDark ? Icons.light_mode : Icons.dark_mode,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: () => themeProvider.toggleTheme(),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: Icon(
+                    authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  tooltip: authService.isAuthenticated ? '로그아웃' : '관리자 로그인',
+                  onPressed: () {
+                    if (authService.isAuthenticated) {
+                      authService.logout();
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                    }
+                  },
+                ),
+              ],
             ),
           ),
 

@@ -352,11 +352,27 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if (!_isLoading && _allContent.isNotEmpty) _applyFilters();
     final authService = Provider.of<AuthService>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context); // Add ThemeProvider
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentIndex == 0 ? 'Lost Ark Raid Hub' : 'Raid Cheat Sheets'),
+        leading: IconButton( // Add Home Button
+          icon: const Icon(Icons.home),
+          tooltip: '메인 화면으로 가기',
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LandingScreen()),
+            );
+          },
+        ),
         actions: [
+          IconButton( // Add Theme Toggle Button
+            icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            tooltip: themeProvider.isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환',
+            onPressed: () => themeProvider.toggleTheme(),
+          ),
           if (authService.isAdmin)
             IconButton(
               icon: const Icon(Icons.visibility_off),
