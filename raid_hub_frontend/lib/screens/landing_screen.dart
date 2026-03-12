@@ -4,7 +4,7 @@ import 'dart:async'; // Add Timer
 import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import '../main.dart';
+import 'home_screen.dart';
 
 /// [LandingScreen]
 /// 앱에 처음 접속했을 때 보여지는 대문(Hero) 화면입니다.
@@ -34,7 +34,8 @@ class _LandingScreenState extends State<LandingScreen> {
     // 5초마다 배경 이미지를 다음 인덱스로 변경
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
       setState(() {
-        _currentImageIndex = (_currentImageIndex + 1) % _backgroundImages.length;
+        _currentImageIndex =
+            (_currentImageIndex + 1) % _backgroundImages.length;
       });
     });
   }
@@ -94,7 +95,9 @@ class _LandingScreenState extends State<LandingScreen> {
                 const SizedBox(width: 8),
                 IconButton(
                   icon: Icon(
-                    authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings,
+                    authService.isAuthenticated
+                        ? Icons.logout
+                        : Icons.admin_panel_settings,
                     color: Colors.white,
                     size: 30,
                   ),
@@ -103,7 +106,12 @@ class _LandingScreenState extends State<LandingScreen> {
                     if (authService.isAuthenticated) {
                       authService.logout();
                     } else {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -127,12 +135,16 @@ class _LandingScreenState extends State<LandingScreen> {
                       color: Colors.white,
                       letterSpacing: 2,
                       shadows: [
-                        Shadow(color: Colors.black54, blurRadius: 10, offset: Offset(2, 2)),
+                        Shadow(
+                          color: Colors.black54,
+                          blurRadius: 10,
+                          offset: Offset(2, 2),
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 서브 타이틀
                   const Text(
                     '모든 레이드 공략과 컨닝페이퍼를 한곳에서',
@@ -141,7 +153,11 @@ class _LandingScreenState extends State<LandingScreen> {
                       color: Colors.white70,
                       letterSpacing: 1,
                       shadows: [
-                        Shadow(color: Colors.black87, blurRadius: 5, offset: Offset(1, 1)),
+                        Shadow(
+                          color: Colors.black87,
+                          blurRadius: 5,
+                          offset: Offset(1, 1),
+                        ),
                       ],
                     ),
                   ),
@@ -149,14 +165,16 @@ class _LandingScreenState extends State<LandingScreen> {
 
                   // 퀵 메뉴 버튼 1: 영상 보러가기
                   _buildMenuButton(
-                    context, 
-                    title: '공략 영상 찾기', 
+                    context,
+                    title: '공략 영상 찾기',
                     icon: Icons.play_circle_fill,
                     color: const Color(0xFF4A90E2),
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomePage(initialIndex: 0)),
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(initialIndex: 0),
+                        ),
                       );
                     },
                   ),
@@ -164,14 +182,16 @@ class _LandingScreenState extends State<LandingScreen> {
 
                   // 퀵 메뉴 버튼 2: 컨닝페이퍼 보러가기
                   _buildMenuButton(
-                    context, 
-                    title: '컨닝페이퍼 보기', 
+                    context,
+                    title: '컨닝페이퍼 보기',
                     icon: Icons.image_search,
                     color: const Color(0xFF5032B6),
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomePage(initialIndex: 1)),
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(initialIndex: 1),
+                        ),
                       );
                     },
                   ),
@@ -185,7 +205,13 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 
   // 예쁜 그라데이션 퀵 메뉴 버튼 빌더
-  Widget _buildMenuButton(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildMenuButton(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return Container(
       width: 280,
       height: 60,
@@ -216,7 +242,11 @@ class _LandingScreenState extends State<LandingScreen> {
             const SizedBox(width: 12),
             Text(
               title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
           ],
         ),

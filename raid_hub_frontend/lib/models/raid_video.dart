@@ -28,7 +28,9 @@ class RaidVideo {
       raidName: json['raidName'],
       difficulty: json['difficulty'],
       gate: json['gate'],
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
     );
   }
 

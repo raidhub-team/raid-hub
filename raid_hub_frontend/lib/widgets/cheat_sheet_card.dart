@@ -19,7 +19,7 @@ class CheatSheetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -31,9 +31,10 @@ class CheatSheetCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Image.network(
-                    cheatSheet.fullImageUrl, 
+                    cheatSheet.fullImageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (ctx, _, __) => const Center(child: Icon(Icons.broken_image, size: 50)),
+                    errorBuilder: (ctx, _, __) =>
+                        const Center(child: Icon(Icons.broken_image, size: 50)),
                   ),
                 ),
                 Padding(
@@ -42,14 +43,20 @@ class CheatSheetCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cheatSheet.title, 
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
-                        maxLines: 1, 
+                        cheatSheet.title,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        "${cheatSheet.raidName} | ${cheatSheet.gate}", 
-                        style: const TextStyle(fontSize: 13, color: Colors.blueGrey),
+                        "${cheatSheet.raidName} | ${cheatSheet.gate}",
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.blueGrey,
+                        ),
                       ),
                     ],
                   ),
@@ -59,7 +66,8 @@ class CheatSheetCard extends StatelessWidget {
           ),
           if (authService.isAdmin)
             Positioned(
-              top: 8, right: 8,
+              top: 8,
+              right: 8,
               child: IconButton(
                 icon: const Icon(Icons.delete, color: Colors.redAccent),
                 onPressed: onDelete,
@@ -82,12 +90,21 @@ class CheatSheetCard extends StatelessWidget {
               Expanded(
                 child: Stack(
                   children: [
-                    Center(child: InteractiveViewer(child: Image.network(cs.fullImageUrl))),
+                    Center(
+                      child: InteractiveViewer(
+                        child: Image.network(cs.fullImageUrl),
+                      ),
+                    ),
                     Positioned(
-                      top: 10, left: 10,
+                      top: 10,
+                      left: 10,
                       child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white, size: 30), 
-                        onPressed: () => Navigator.pop(context)
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ],
@@ -95,11 +112,14 @@ class CheatSheetCard extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 color: Colors.black87,
                 child: Text(
-                  '출처: ${cs.uploaderName}', 
-                  style: const TextStyle(color: Colors.white, fontSize: 16), 
+                  '출처: ${cs.uploaderName}',
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
               ),

@@ -25,19 +25,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('로그인 성공!')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('로그인 성공!')));
           // Navigate back to HomePage
           Navigator.pop(context);
         }
       } else {
         if (mounted) {
           final authService = Provider.of<AuthService>(context, listen: false);
-          final errorMessage = authService.loginErrorMessage ?? '아이디 또는 비밀번호를 확인하세요.';
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage)),
-          );
+          final errorMessage =
+              authService.loginErrorMessage ?? '아이디 또는 비밀번호를 확인하세요.';
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(errorMessage)));
         }
       }
     }
@@ -46,9 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('관리자 로그인'),
-      ),
+      appBar: AppBar(title: const Text('관리자 로그인')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -89,15 +88,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    ElevatedButton(
-                      onPressed: _login,
-                      child: const Text('로그인'),
-                    ),
+                    ElevatedButton(onPressed: _login, child: const Text('로그인')),
                     OutlinedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SignupScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const SignupScreen(),
+                          ),
                         );
                       },
                       child: const Text('회원가입'),

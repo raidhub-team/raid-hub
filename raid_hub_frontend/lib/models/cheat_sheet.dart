@@ -27,7 +27,9 @@ class CheatSheet {
       gate: json['gate'] ?? '',
       uploaderName: json['uploaderName'] ?? '알 수 없음',
       imageUrl: json['imageUrl'] ?? '',
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : null,
     );
   }
 

@@ -28,7 +28,10 @@ class VideoCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       elevation: 4,
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(
@@ -38,8 +41,10 @@ class VideoCard extends StatelessWidget {
               final videoId = _getYouTubeVideoId(video.youtubeUrl);
               if (videoId != null) {
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => VideoPlayerScreen(videoId: videoId))
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoPlayerScreen(videoId: videoId),
+                  ),
                 );
               }
             },
@@ -50,11 +55,17 @@ class VideoCard extends StatelessWidget {
                   aspectRatio: 16 / 9,
                   child: thumbnailUrl != null
                       ? Image.network(
-                          thumbnailUrl!, 
+                          thumbnailUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (ctx, _, __) => Container(color: Colors.grey, child: const Icon(Icons.broken_image))
+                          errorBuilder: (ctx, _, __) => Container(
+                            color: Colors.grey,
+                            child: const Icon(Icons.broken_image),
+                          ),
                         )
-                      : Container(color: Colors.black12, child: const Icon(Icons.videocam, size: 50)),
+                      : Container(
+                          color: Colors.black12,
+                          child: const Icon(Icons.videocam, size: 50),
+                        ),
                 ),
                 Expanded(
                   child: Padding(
@@ -63,19 +74,29 @@ class VideoCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          video.title, 
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
-                          maxLines: 2, 
-                          overflow: TextOverflow.ellipsis
+                          video.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "[관리자 등록] ${video.raidName} - ${video.difficulty}", 
-                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)
+                          "[관리자 등록] ${video.raidName} - ${video.difficulty}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                          "${video.gate} | ${video.uploaderName}", 
-                          style: const TextStyle(fontSize: 12, color: Colors.grey)
+                          "${video.gate} | ${video.uploaderName}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -86,11 +107,19 @@ class VideoCard extends StatelessWidget {
           ),
           if (authService.isAdmin)
             Positioned(
-              top: 8, right: 8,
+              top: 8,
+              right: 8,
               child: Container(
-                decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
                 child: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.redAccent, size: 20),
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.redAccent,
+                    size: 20,
+                  ),
                   onPressed: onDelete,
                 ),
               ),
@@ -116,11 +145,7 @@ class PlaylistCard extends StatelessWidget {
   final PlaylistItem item;
   final VoidCallback onBlock;
 
-  const PlaylistCard({
-    super.key,
-    required this.item,
-    required this.onBlock,
-  });
+  const PlaylistCard({super.key, required this.item, required this.onBlock});
 
   @override
   Widget build(BuildContext context) {
@@ -133,8 +158,11 @@ class PlaylistCard extends StatelessWidget {
           InkWell(
             onTap: () {
               Navigator.push(
-                context, 
-                MaterialPageRoute(builder: (context) => VideoPlayerScreen(videoId: item.videoId))
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      VideoPlayerScreen(videoId: item.videoId),
+                ),
               );
             },
             child: Column(
@@ -144,11 +172,17 @@ class PlaylistCard extends StatelessWidget {
                   aspectRatio: 16 / 9,
                   child: item.thumbnailUrl.isNotEmpty
                       ? Image.network(
-                          item.thumbnailUrl, 
+                          item.thumbnailUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (ctx, _, __) => Container(color: Colors.grey, child: const Icon(Icons.broken_image))
+                          errorBuilder: (ctx, _, __) => Container(
+                            color: Colors.grey,
+                            child: const Icon(Icons.broken_image),
+                          ),
                         )
-                      : Container(color: Colors.black12, child: const Icon(Icons.videocam, size: 50)),
+                      : Container(
+                          color: Colors.black12,
+                          child: const Icon(Icons.videocam, size: 50),
+                        ),
                 ),
                 Expanded(
                   child: Padding(
@@ -157,22 +191,31 @@ class PlaylistCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item.title, 
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold), 
-                          maxLines: 2, 
-                          overflow: TextOverflow.ellipsis
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          item.channelTitle, 
-                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.secondary),
+                          item.channelTitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          item.publishedAt, 
-                          style: const TextStyle(fontSize: 11, color: Colors.grey)
+                          item.publishedAt,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
                         ),
                       ],
                     ),
@@ -183,11 +226,19 @@ class PlaylistCard extends StatelessWidget {
           ),
           if (authService.isAdmin)
             Positioned(
-              top: 8, right: 8,
+              top: 8,
+              right: 8,
               child: Container(
-                decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
                 child: IconButton(
-                  icon: const Icon(Icons.visibility_off, color: Colors.orangeAccent, size: 20),
+                  icon: const Icon(
+                    Icons.visibility_off,
+                    color: Colors.orangeAccent,
+                    size: 20,
+                  ),
                   tooltip: '이 영상 숨기기',
                   onPressed: onBlock,
                 ),

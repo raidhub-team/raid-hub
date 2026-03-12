@@ -8,17 +8,18 @@ import '../models/cheat_sheet.dart'; // Import CheatSheet model
 import 'package:raid_hub_frontend/services/auth_service.dart'; // Import AuthService
 
 class ApiService {
-  final String baseUrl = "${dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080'}/api/videos";
-  final String _apiBaseUrl = "${dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080'}/api"; // Added base API URL
-  final AuthService _authService = AuthService(); // Get the AuthService instance
+  final String baseUrl =
+      "${dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080'}/api/videos";
+  final String _apiBaseUrl =
+      "${dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080'}/api"; // Added base API URL
+  final AuthService _authService =
+      AuthService(); // Get the AuthService instance
   final http.Client _client = BrowserClient()..withCredentials = true;
 
   // Cheat Sheet 관련 API 추가
   Future<List<CheatSheet>> getCheatSheets() async {
     try {
-      final response = await _client.get(
-        Uri.parse('$_apiBaseUrl/cheatsheets'),
-      );
+      final response = await _client.get(Uri.parse('$_apiBaseUrl/cheatsheets'));
 
       if (response.statusCode == 200) {
         List<dynamic> body = jsonDecode(utf8.decode(response.bodyBytes));
@@ -58,15 +59,18 @@ class ApiService {
     required String fileName,
   }) async {
     try {
-      var request = http.MultipartRequest('POST', Uri.parse('$_apiBaseUrl/cheatsheets'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_apiBaseUrl/cheatsheets'),
+      );
       request.fields['title'] = title;
       request.fields['raidName'] = raidName;
       request.fields['gate'] = gate;
       request.fields['uploaderName'] = uploaderName; // Added
-      
+
       // 파일 추가
       var multipartFile = http.MultipartFile.fromBytes(
-        'file', 
+        'file',
         fileBytes,
         filename: fileName,
       );
@@ -76,7 +80,7 @@ class ApiService {
       if (_client is BrowserClient) {
         (_client as BrowserClient).withCredentials = true;
       }
-      
+
       // AuthService의 헤더를 가져옴 (쿠키 등은 BrowserClient가 처리함)
       // request.headers.addAll(_authService.getAuthHeaders());
 
@@ -121,7 +125,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-         // UTF-8 디코딩 처리
+        // UTF-8 디코딩 처리
         return RaidVideo.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       } else {
         print('Video creation failed. Status: ${response.statusCode}');
@@ -193,7 +197,7 @@ class ApiService {
         Uri.parse('$_apiBaseUrl/blocked-videos'),
         headers: _authService.getAuthHeaders(),
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> body = jsonDecode(response.body);
         return body.cast<String>();
@@ -209,14 +213,18 @@ class ApiService {
   Future<List<PlaylistItem>> getPlaylistItems(String playlistId) async {
     try {
       final response = await _client.get(
-        Uri.parse('$_apiBaseUrl/youtube/playlist-items?playlistId=$playlistId&fetchAll=true'),
+        Uri.parse(
+          '$_apiBaseUrl/youtube/playlist-items?playlistId=$playlistId&fetchAll=true',
+        ),
       );
 
       if (response.statusCode == 200) {
         // UTF-8 디코딩 처리 (한글 깨짐 방지)
         final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
         final List<dynamic> items = jsonData['items'] ?? [];
-        return items.map((dynamic item) => PlaylistItem.fromJson(item)).toList();
+        return items
+            .map((dynamic item) => PlaylistItem.fromJson(item))
+            .toList();
       } else {
         throw Exception('Failed to load playlist items');
       }

@@ -7,8 +7,12 @@ import '../models/raid_video.dart';
 class VideoUploadDialog extends StatefulWidget {
   final Map<String, List<String>> raidByCategory;
   final Function(RaidVideo) onUpload;
-  
-  const VideoUploadDialog({super.key, required this.raidByCategory, required this.onUpload});
+
+  const VideoUploadDialog({
+    super.key,
+    required this.raidByCategory,
+    required this.onUpload,
+  });
 
   @override
   State<VideoUploadDialog> createState() => _VideoUploadDialogState();
@@ -42,38 +46,60 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 decoration: const InputDecoration(labelText: '레이드 분류'),
-                items: widget.raidByCategory.keys.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                items: widget.raidByCategory.keys
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
                 onChanged: (val) => setState(() {
                   _selectedCategory = val!;
-                  _selectedRaidName = widget.raidByCategory[_selectedCategory]?.first;
+                  _selectedRaidName =
+                      widget.raidByCategory[_selectedCategory]?.first;
                 }),
               ),
               DropdownButtonFormField<String>(
                 value: _selectedRaidName,
                 decoration: const InputDecoration(labelText: '레이드 이름'),
-                items: widget.raidByCategory[_selectedCategory]?.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                items: widget.raidByCategory[_selectedCategory]
+                    ?.map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
                 onChanged: (val) => setState(() => _selectedRaidName = val),
               ),
-              TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: '영상 제목'), validator: (val) => val!.isEmpty ? '제목을 입력하세요' : null),
-              TextFormField(controller: _urlController, decoration: const InputDecoration(labelText: '유튜브 URL'), validator: (val) => val!.isEmpty ? 'URL을 입력하세요' : null),
-              TextFormField(controller: _uploaderController, decoration: const InputDecoration(labelText: '스트리머/유튜버 이름'), validator: (val) => val!.isEmpty ? '이름을 입력하세요' : null),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: '영상 제목'),
+                validator: (val) => val!.isEmpty ? '제목을 입력하세요' : null,
+              ),
+              TextFormField(
+                controller: _urlController,
+                decoration: const InputDecoration(labelText: '유튜브 URL'),
+                validator: (val) => val!.isEmpty ? 'URL을 입력하세요' : null,
+              ),
+              TextFormField(
+                controller: _uploaderController,
+                decoration: const InputDecoration(labelText: '스트리머/유튜버 이름'),
+                validator: (val) => val!.isEmpty ? '이름을 입력하세요' : null,
+              ),
             ],
           ),
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('취소'),
+        ),
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              widget.onUpload(RaidVideo(
-                title: _titleController.text,
-                youtubeUrl: _urlController.text,
-                uploaderName: _uploaderController.text,
-                raidName: _selectedRaidName!,
-                difficulty: '공략',
-                gate: '전체',
-              ));
+              widget.onUpload(
+                RaidVideo(
+                  title: _titleController.text,
+                  youtubeUrl: _urlController.text,
+                  uploaderName: _uploaderController.text,
+                  raidName: _selectedRaidName!,
+                  difficulty: '공략',
+                  gate: '전체',
+                ),
+              );
             }
           },
           child: const Text('등록'),
@@ -89,8 +115,12 @@ class _VideoUploadDialogState extends State<VideoUploadDialog> {
 class CheatSheetUploadDialog extends StatefulWidget {
   final Map<String, List<String>> raidByCategory;
   final Function(String, String, String, String, List<int>, String) onUpload;
-  
-  const CheatSheetUploadDialog({super.key, required this.raidByCategory, required this.onUpload});
+
+  const CheatSheetUploadDialog({
+    super.key,
+    required this.raidByCategory,
+    required this.onUpload,
+  });
 
   @override
   State<CheatSheetUploadDialog> createState() => _CheatSheetUploadDialogState();
@@ -113,7 +143,10 @@ class _CheatSheetUploadDialogState extends State<CheatSheetUploadDialog> {
   }
 
   Future<void> _pickImage() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
     if (result != null) setState(() => _pickedFile = result.files.first);
   }
 
@@ -127,39 +160,79 @@ class _CheatSheetUploadDialogState extends State<CheatSheetUploadDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (_pickedFile != null) Padding(padding: const EdgeInsets.only(bottom: 10), child: Image.memory(_pickedFile!.bytes!, height: 150, fit: BoxFit.cover)),
-              ElevatedButton.icon(onPressed: _pickImage, icon: const Icon(Icons.image), label: Text(_pickedFile == null ? '이미지 선택' : '이미지 변경')),
+              if (_pickedFile != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Image.memory(
+                    _pickedFile!.bytes!,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ElevatedButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.image),
+                label: Text(_pickedFile == null ? '이미지 선택' : '이미지 변경'),
+              ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 decoration: const InputDecoration(labelText: '레이드 분류'),
-                items: widget.raidByCategory.keys.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                items: widget.raidByCategory.keys
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
                 onChanged: (val) => setState(() {
                   _selectedCategory = val!;
-                  _selectedRaidName = widget.raidByCategory[_selectedCategory]?.first;
+                  _selectedRaidName =
+                      widget.raidByCategory[_selectedCategory]?.first;
                 }),
               ),
               DropdownButtonFormField<String>(
                 value: _selectedRaidName,
                 decoration: const InputDecoration(labelText: '레이드 이름'),
-                items: widget.raidByCategory[_selectedCategory]?.map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                items: widget.raidByCategory[_selectedCategory]
+                    ?.map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .toList(),
                 onChanged: (val) => setState(() => _selectedRaidName = val),
               ),
-              TextFormField(controller: _titleController, decoration: const InputDecoration(labelText: '공략 제목'), validator: (val) => val!.isEmpty ? '제목을 입력하세요' : null),
-              TextFormField(controller: _gateController, decoration: const InputDecoration(labelText: '관문'), validator: (val) => val!.isEmpty ? '관문을 입력하세요' : null),
-              TextFormField(controller: _uploaderController, decoration: const InputDecoration(labelText: '출처 (작성자/사이트명 등)')),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: '공략 제목'),
+                validator: (val) => val!.isEmpty ? '제목을 입력하세요' : null,
+              ),
+              TextFormField(
+                controller: _gateController,
+                decoration: const InputDecoration(labelText: '관문'),
+                validator: (val) => val!.isEmpty ? '관문을 입력하세요' : null,
+              ),
+              TextFormField(
+                controller: _uploaderController,
+                decoration: const InputDecoration(labelText: '출처 (작성자/사이트명 등)'),
+              ),
             ],
           ),
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('취소'),
+        ),
         ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate() && _pickedFile != null) {
-              widget.onUpload(_titleController.text, _selectedRaidName!, _gateController.text, _uploaderController.text, _pickedFile!.bytes!, _pickedFile!.name);
+              widget.onUpload(
+                _titleController.text,
+                _selectedRaidName!,
+                _gateController.text,
+                _uploaderController.text,
+                _pickedFile!.bytes!,
+                _pickedFile!.name,
+              );
             } else if (_pickedFile == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('이미지를 선택해주세요.')));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('이미지를 선택해주세요.')));
             }
           },
           child: const Text('업로드'),

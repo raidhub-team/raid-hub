@@ -41,9 +41,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('YouTube Player'),
-      ),
+      appBar: AppBar(title: const Text('YouTube Player')),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

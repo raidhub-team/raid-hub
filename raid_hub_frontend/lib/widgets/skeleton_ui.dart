@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// [SkeletonCard] 
+/// [SkeletonCard]
 /// 데이터 로딩 중에 표시되는 깜빡이는 카드 UI 위젯입니다.
 /// ShimmerEffect와 결합하여 부드러운 로딩 경험을 제공합니다.
 class SkeletonCard extends StatelessWidget {
@@ -24,7 +24,11 @@ class SkeletonCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(width: double.infinity, height: 16, color: Colors.white10),
+                    Container(
+                      width: double.infinity,
+                      height: 16,
+                      color: Colors.white10,
+                    ),
                     const SizedBox(height: 8),
                     Container(width: 150, height: 12, color: Colors.white10),
                     const SizedBox(height: 4),
@@ -50,14 +54,18 @@ class ShimmerEffect extends StatefulWidget {
   State<ShimmerEffect> createState() => _ShimmerEffectState();
 }
 
-class _ShimmerEffectState extends State<ShimmerEffect> with SingleTickerProviderStateMixin {
+class _ShimmerEffectState extends State<ShimmerEffect>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
     _animation = Tween<double>(begin: 0.3, end: 1.0).animate(_controller);
   }
 

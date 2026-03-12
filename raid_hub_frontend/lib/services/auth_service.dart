@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
 import 'dart:convert';
 
-class AuthService extends ChangeNotifier { // Extend ChangeNotifier
+class AuthService extends ChangeNotifier {
+  // Extend ChangeNotifier
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
@@ -37,14 +38,14 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
   }
 
   Future<bool> checkUsernameAvailability(String username) async {
-    final Uri checkUri = Uri.parse('$_baseUrl/api/users/check-username/$username');
+    final Uri checkUri = Uri.parse(
+      '$_baseUrl/api/users/check-username/$username',
+    );
 
     try {
       final response = await _client.get(
         checkUri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
+        headers: <String, String>{'Content-Type': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -52,7 +53,9 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
         bool exists = responseBody['exists'] ?? false;
         return !exists;
       } else {
-        print('Check username failed: ${response.statusCode} - ${response.body}');
+        print(
+          'Check username failed: ${response.statusCode} - ${response.body}',
+        );
         return false;
       }
     } catch (e) {
@@ -67,13 +70,8 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
     try {
       final response = await _client.post(
         registerUri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-        }),
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username, 'password': password}),
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
@@ -98,10 +96,7 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
         headers: <String, String>{
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: {
-          'username': username,
-          'password': password,
-        },
+        body: {'username': username, 'password': password},
       );
 
       if (response.statusCode == 200) {
@@ -165,9 +160,7 @@ class AuthService extends ChangeNotifier { // Extend ChangeNotifier
 
   // Helper method to get headers with session cookie for authenticated requests
   Map<String, String> getAuthHeaders() {
-    return {
-      'Content-Type': 'application/json',
-    };
+    return {'Content-Type': 'application/json'};
   }
 
   Future<void> _persistSession(String sessionId, String username) async {
