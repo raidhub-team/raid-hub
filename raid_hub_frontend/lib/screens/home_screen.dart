@@ -302,10 +302,16 @@ class _HomePageState extends State<HomePage> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        title: Text(_currentIndex == 0 ? 'Lost Ark Raid Hub' : 'Raid Cheat Sheets'),
+        elevation: 0,
+        backgroundColor: themeProvider.isDarkMode ? Colors.black.withOpacity(0.2) : Colors.blueGrey.shade50,
+        title: Text(
+          _currentIndex == 0 ? 'Lost Ark Raid Hub' : 'Raid Cheat Sheets',
+          style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.home),
+          icon: const Icon(Icons.home_rounded),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -315,16 +321,16 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(themeProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
             onPressed: () => themeProvider.toggleTheme(),
           ),
           if (authService.isAdmin)
             IconButton(
-              icon: const Icon(Icons.visibility_off),
+              icon: const Icon(Icons.visibility_off_rounded),
               onPressed: _showBlockedVideosDialog,
             ),
           IconButton(
-            icon: Icon(authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings),
+            icon: Icon(authService.isAuthenticated ? Icons.logout_rounded : Icons.admin_panel_settings_rounded),
             onPressed: () {
                 if (authService.isAuthenticated) {
                     authService.logout();
@@ -333,22 +339,34 @@ class _HomePageState extends State<HomePage> {
                 }
             },
           ),
-          const SizedBox(width: 16), // 우측 여백 추가
+          const SizedBox(width: 16),
         ],
       ),
-      body: _buildCenteredContent(
-        Column(
-          children: [
-            _buildSearchAndSortBar(),
-            _buildDropdownFilters(),
-            Expanded(
-              child: _isLoading 
-                ? _buildSkeletonGrid() 
-                : (_allContent.isEmpty)
-                  ? _buildErrorView()
-                  : (_currentIndex == 0 ? _buildVideosContent() : _buildCheatSheetsGrid()),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: themeProvider.isDarkMode 
+              ? [const Color(0xFF1A1C20), const Color(0xFF0F1012)] // 깊은 다크 톤
+              : [Colors.white, const Color(0xFFF0F2F5)], // 부드러운 라이트 톤
+          ),
+        ),
+        child: _buildCenteredContent(
+          Column(
+            children: [
+              _buildSearchAndSortBar(),
+              _buildDropdownFilters(),
+              const SizedBox(height: 10),
+              Expanded(
+                child: _isLoading 
+                  ? _buildSkeletonGrid() 
+                  : (_allContent.isEmpty)
+                    ? _buildErrorView()
+                    : (_currentIndex == 0 ? _buildVideosContent() : _buildCheatSheetsGrid()),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -461,10 +479,27 @@ class _HomePageState extends State<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-          child: Text(
-            categoryName,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+          padding: const EdgeInsets.fromLTRB(20, 25, 20, 15),
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: categoryName == '로아 유용한 팁' ? Colors.orangeAccent : Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                categoryName,
+                style: const TextStyle(
+                  fontSize: 22, 
+                  fontWeight: FontWeight.bold, 
+                  letterSpacing: -0.8,
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(
