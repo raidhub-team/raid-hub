@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // Import for ChangeNotifier
 import 'package:http/http.dart' as http;
 import 'package:http/browser_client.dart';
@@ -33,7 +34,7 @@ class AuthService extends ChangeNotifier {
     _sessionCookie = null;
     _username = null;
     _role = null;
-    print('Starting fresh: Always logged out on entry.');
+    debugPrint('Starting fresh: Always logged out on entry.');
     notifyListeners();
   }
 
@@ -53,13 +54,13 @@ class AuthService extends ChangeNotifier {
         bool exists = responseBody['exists'] ?? false;
         return !exists;
       } else {
-        print(
+        debugPrint(
           'Check username failed: ${response.statusCode} - ${response.body}',
         );
         return false;
       }
     } catch (e) {
-      print('Error checking username availability: $e');
+      debugPrint('Error checking username availability: $e');
       return false;
     }
   }
@@ -75,14 +76,14 @@ class AuthService extends ChangeNotifier {
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        print('Registration successful');
+        debugPrint('Registration successful');
         return true;
       } else {
-        print('Registration failed: ${response.statusCode} - ${response.body}');
+        debugPrint('Registration failed: ${response.statusCode} - ${response.body}');
         return false;
       }
     } catch (e) {
-      print('Error during registration: $e');
+      debugPrint('Error during registration: $e');
       return false;
     }
   }
@@ -114,7 +115,7 @@ class AuthService extends ChangeNotifier {
           }
           await _persistSession(sessionId, username);
           _loginErrorMessage = null;
-          print('Login successful. Session ID: $sessionId, Role: $_role');
+          debugPrint('Login successful. Session ID: $sessionId, Role: $_role');
           notifyListeners(); // Notify listeners of state change
           return true;
         }
@@ -128,7 +129,7 @@ class AuthService extends ChangeNotifier {
         } catch (e) {
           _loginErrorMessage = '아이디 또는 비밀번호를 확인하세요.';
         }
-        print('Login failed: ${response.statusCode} - ${response.body}');
+        debugPrint('Login failed: ${response.statusCode} - ${response.body}');
         _sessionCookie = null;
         _username = null;
         _role = null;
@@ -137,7 +138,7 @@ class AuthService extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error during login: $e');
+      debugPrint('Error during login: $e');
       _loginErrorMessage = '로그인 실패: $e';
       _sessionCookie = null;
       _username = null;
@@ -152,7 +153,7 @@ class AuthService extends ChangeNotifier {
     _sessionCookie = null;
     _username = null;
     _role = null;
-    print('Logged out.');
+    debugPrint('Logged out.');
     _clearSession();
     notifyListeners(); // Notify listeners of state change
     // TODO: Optionally send a logout request to the backend if needed

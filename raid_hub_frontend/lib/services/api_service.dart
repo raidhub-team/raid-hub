@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/browser_client.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
@@ -28,7 +29,7 @@ class ApiService {
         throw Exception('Failed to load cheat sheets');
       }
     } catch (e) {
-      print('Error fetching cheat sheets: $e');
+      debugPrint('Error fetching cheat sheets: $e');
       return [];
     }
   }
@@ -44,7 +45,7 @@ class ApiService {
         throw Exception('Failed to delete cheat sheet: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error deleting cheat sheet: $e');
+      debugPrint('Error deleting cheat sheet: $e');
       throw e;
     }
   }
@@ -88,11 +89,11 @@ class ApiService {
       final responseBody = await response.stream.bytesToString();
 
       if (response.statusCode != 200) {
-        print('Upload failed: $responseBody');
+        debugPrint('Upload failed: $responseBody');
         throw Exception('Upload failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error uploading cheat sheet: $e');
+      debugPrint('Error uploading cheat sheet: $e');
       throw e;
     }
   }
@@ -128,12 +129,12 @@ class ApiService {
         // UTF-8 디코딩 처리
         return RaidVideo.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       } else {
-        print('Video creation failed. Status: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Video creation failed. Status: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
         throw Exception('Failed to create video: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error creating video: $e');
+      debugPrint('Error creating video: $e');
       throw e;
     }
   }
@@ -149,7 +150,7 @@ class ApiService {
         throw Exception('Failed to delete video: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error deleting video: $e');
+      debugPrint('Error deleting video: $e');
       throw e;
     }
   }
@@ -168,7 +169,7 @@ class ApiService {
         throw Exception('Failed to block video: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error blocking video: $e');
+      debugPrint('Error blocking video: $e');
       throw e;
     }
   }
@@ -186,7 +187,7 @@ class ApiService {
         throw Exception('Failed to unblock video: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error unblocking video: $e');
+      debugPrint('Error unblocking video: $e');
       throw e;
     }
   }
@@ -205,7 +206,7 @@ class ApiService {
         throw Exception('Failed to load blocked video IDs');
       }
     } catch (e) {
-      print('Error fetching blocked video IDs: $e');
+      debugPrint('Error fetching blocked video IDs: $e');
       return [];
     }
   }
