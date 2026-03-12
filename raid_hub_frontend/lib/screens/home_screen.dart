@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import '../models/raid_video.dart';
 import '../models/playlist_item.dart';
@@ -31,23 +32,19 @@ class _HomePageState extends State<HomePage> {
   String _selectedGuideKeyword = '전체';
   String _searchQuery = '';
   String _sortOption = '최신순'; // '최신순', '제목순'
-  // 드롭다운에서 선택된 대분류/소분류 상태
   String _selectedCategory = '전체 레이드';
   String _selectedRaid = '전체';
 
   final _searchController = TextEditingController();
 
-  // Data - Videos
+  // Data
   List<dynamic> _allContent = [];
   List<dynamic> _filteredContent = [];
   List<dynamic> _blockedContent = [];
   List<String> _blockedVideoIds = [];
-
-  // Data - Cheat Sheets
   List<CheatSheet> _allCheatSheets = [];
   List<CheatSheet> _filteredCheatSheets = [];
 
-  // Loading State
   bool _isLoading = true;
 
   @override
@@ -108,7 +105,6 @@ class _HomePageState extends State<HomePage> {
     await _loadData();
   }
 
-  // 키워드 매칭 로직을 별도로 분리하여 관리
   bool _checkKeywordMatch(dynamic item, String keyword) {
     if (keyword == '전체') return true;
 
@@ -135,7 +131,6 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    // 종막 예외 처리 등 기존 로직 유지
     if (itemActs.contains('종막') && itemActs.length > 1) {
       if (!title.contains('종막') && !raidName.contains('종막')) itemActs.remove('종막');
     }
@@ -179,14 +174,11 @@ class _HomePageState extends State<HomePage> {
       String uploader = (item is RaidVideo) ? item.uploaderName : (item as PlaylistItem).channelTitle;
       String raidName = (item is RaidVideo) ? item.raidName : '';
 
-      // 1. 대분류 필터링
       bool matchesCategory = true;
       if (_selectedCategory != '전체 레이드') {
         List<String> subRaids = RaidConstants.dropdownCategory[_selectedCategory] ?? [];
         List<String> actualRaids = subRaids.where((r) => r != '전체').toList();
-        
         matchesCategory = actualRaids.any((raid) {
-          // 괄호 포함된 레이드명에서 실제 키워드만 추출 (예: (서막)에키드나 -> 서막, 에키드나)
           if (raid.contains('(')) {
             RegExp regex = RegExp(r'\((.*?)\)');
             String act = regex.firstMatch(raid)?.group(1) ?? '';
@@ -197,10 +189,7 @@ class _HomePageState extends State<HomePage> {
         });
       }
 
-      // 2. 소분류 필터링 (기존 _selectedGuideKeyword 기반)
       bool matchesKeyword = _checkKeywordMatch(item, _selectedGuideKeyword);
-
-      // 3. 검색어 필터링
       bool matchesSearch = _searchQuery.isEmpty || 
           title.toLowerCase().contains(_searchQuery.toLowerCase()) || 
           uploader.toLowerCase().contains(_searchQuery.toLowerCase()) ||
@@ -224,7 +213,6 @@ class _HomePageState extends State<HomePage> {
     }
     _filteredContent = filteredVideos;
 
-    // 컨닝페이퍼 필터링도 동일한 대분류 로직 적용
     List<CheatSheet> filteredCS = _allCheatSheets.where((cs) {
       bool matchesCategory = true;
       if (_selectedCategory != '전체 레이드') {
@@ -274,7 +262,6 @@ class _HomePageState extends State<HomePage> {
         title: Text(_currentIndex == 0 ? 'Lost Ark Raid Hub' : 'Raid Cheat Sheets'),
         leading: IconButton(
           icon: const Icon(Icons.home),
-          tooltip: '메인 화면으로 가기',
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -285,18 +272,15 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: Icon(themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            tooltip: themeProvider.isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환',
             onPressed: () => themeProvider.toggleTheme(),
           ),
           if (authService.isAdmin)
             IconButton(
               icon: const Icon(Icons.visibility_off),
-              tooltip: '숨긴 영상 관리',
               onPressed: _showBlockedVideosDialog,
             ),
           IconButton(
             icon: Icon(authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings),
-            tooltip: authService.isAuthenticated ? '로그아웃' : '관리자 로그인',
             onPressed: () {
                 if (authService.isAuthenticated) {
                     authService.logout();
@@ -308,18 +292,18 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Column(
-              children: [
-                _buildSearchAndSortBar(),
-                _buildDropdownFilters(),
-                Expanded(
-                  child: _isLoading 
-                    ? _buildSkeletonGrid() 
-                    : (_allContent.isEmpty && !_isLoading)
-                      ? _buildErrorView()
-                      : (_currentIndex == 0 ? _buildVideosGrid() : _buildCheatSheetsGrid()),
-                ),
-              ],
-            ),
+        children: [
+          _buildSearchAndSortBar(),
+          _buildDropdownFilters(),
+          Expanded(
+            child: _isLoading 
+              ? _buildSkeletonGrid() 
+              : (_allContent.isEmpty)
+                ? _buildErrorView()
+                : (_currentIndex == 0 ? _buildVideosContent() : _buildCheatSheetsGrid()),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -337,6 +321,210 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // 넷플릭스 스타일과 기존 그리드 스타일을 전환하는 핵심 메서드
+  Widget _buildVideosContent() {
+    // 검색 중이거나 특정 필터가 선택된 경우 -> 기존 그리드 뷰
+    bool isFiltering = _searchQuery.isNotEmpty || _selectedCategory != '전체 레이드' || _selectedRaid != '전체';
+    
+    if (isFiltering) {
+      return _buildVideosGrid();
+    }
+
+    // 초기 상태 -> 넷플릭스 스타일 가로 섹션 뷰
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      children: RaidConstants.dropdownCategory.keys
+          .where((cat) => cat != '전체 레이드') // '전체 레이드'는 섹션에서 제외
+          .map((category) => _buildNetflixSection(category))
+          .toList(),
+    );
+  }
+
+  // 가로 스크롤 섹션 빌더
+  Widget _buildNetflixSection(String categoryName) {
+    // 해당 카테고리에 속하는 아이템들 필터링
+    final List<String> subRaids = RaidConstants.dropdownCategory[categoryName] ?? [];
+    final List<String> actualRaids = subRaids.where((r) => r != '전체').toList();
+    
+    final sectionItems = _allContent.where((item) {
+      return actualRaids.any((raid) {
+        if (raid.contains('(')) {
+          String act = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? '';
+          String realRaid = raid.split(')').last;
+          return _checkKeywordMatch(item, act) || 
+                 (item is RaidVideo && item.title.contains(realRaid)) || 
+                 (item is PlaylistItem && item.title.contains(realRaid));
+        }
+        return _checkKeywordMatch(item, raid);
+      });
+    }).toList();
+
+    if (sectionItems.isEmpty) return const SizedBox.shrink();
+
+    // 최신순 정렬
+    sectionItems.sort((a, b) {
+      DateTime dateA = (a is RaidVideo) ? (a.createdAt ?? DateTime(2000)) : DateTime.tryParse((a as PlaylistItem).publishedAt) ?? DateTime(2000);
+      DateTime dateB = (b is RaidVideo) ? (b.createdAt ?? DateTime(2000)) : DateTime.tryParse((b as PlaylistItem).publishedAt) ?? DateTime(2000);
+      return dateB.compareTo(dateA);
+    });
+
+    final ScrollController scrollController = ScrollController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+          child: Text(
+            categoryName,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+          ),
+        ),
+        SizedBox(
+          height: 330,
+          child: Stack(
+            children: [
+              ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5), // 위아래 여백 추가
+                scrollDirection: Axis.horizontal,
+                itemCount: sectionItems.length,
+                itemBuilder: (context, index) {
+                  final item = sectionItems[index];
+                  return Container(
+                    width: 280, 
+                    margin: const EdgeInsets.symmetric(horizontal: 8), // 좌우 간격 확대
+                    child: item is RaidVideo
+                        ? VideoCard(
+                            video: item,
+                            thumbnailUrl: _getYouTubeThumbnail(item.youtubeUrl),
+                            onDelete: () => _showDeleteVideoConfirm(item),
+                          )
+                        : PlaylistCard(
+                            item: item as PlaylistItem,
+                            onBlock: () => _showBlockVideoConfirm(item),
+                          ),
+                  );
+                },
+              ),
+              if (kIsWeb) ...[
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            scrollController.animateTo(
+                              scrollController.offset - 300,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(2, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () {
+                            scrollController.animateTo(
+                              scrollController.offset + 300,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(-2, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 24),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVideosGrid() {
+    return _filteredContent.isEmpty
+        ? const Center(child: Text("해당 키워드의 공략 영상이 없습니다."))
+        : GridView.builder(
+            padding: const EdgeInsets.all(20),
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 350, 
+              childAspectRatio: 0.85, 
+              crossAxisSpacing: 20, 
+              mainAxisSpacing: 20,
+            ),
+            itemCount: _filteredContent.length,
+            itemBuilder: (context, index) {
+              final item = _filteredContent[index];
+              if (item is RaidVideo) {
+                return VideoCard(
+                  video: item, 
+                  thumbnailUrl: _getYouTubeThumbnail(item.youtubeUrl),
+                  onDelete: () => _showDeleteVideoConfirm(item),
+                );
+              } else {
+                return PlaylistCard(
+                  item: item as PlaylistItem,
+                  onBlock: () => _showBlockVideoConfirm(item),
+                );
+              }
+            },
+          );
+  }
+
+  // (이하 나머지 위젯 및 메서드는 기존과 동일)
   Widget _buildSkeletonGrid() {
     return GridView.builder(
       padding: const EdgeInsets.all(20),
@@ -492,36 +680,6 @@ class _HomePageState extends State<HomePage> {
     } else {
        _selectedGuideKeyword = _selectedRaid;
     }
-  }
-
-  Widget _buildVideosGrid() {
-    return _filteredContent.isEmpty && !_isLoading
-        ? const Center(child: Text("해당 키워드의 공략 영상이 없습니다."))
-        : GridView.builder(
-            padding: const EdgeInsets.all(20),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 350, 
-              childAspectRatio: 0.85, 
-              crossAxisSpacing: 20, 
-              mainAxisSpacing: 20,
-            ),
-            itemCount: _filteredContent.length,
-            itemBuilder: (context, index) {
-              final item = _filteredContent[index];
-              if (item is RaidVideo) {
-                return VideoCard(
-                  video: item, 
-                  thumbnailUrl: _getYouTubeThumbnail(item.youtubeUrl),
-                  onDelete: () => _showDeleteVideoConfirm(item),
-                );
-              } else {
-                return PlaylistCard(
-                  item: item as PlaylistItem,
-                  onBlock: () => _showBlockVideoConfirm(item),
-                );
-              }
-            },
-          );
   }
 
   Widget _buildCheatSheetsGrid() {
