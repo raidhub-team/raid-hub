@@ -200,6 +200,39 @@ class _HomePageState extends State<HomePage> {
 
     if (_sortOption == '최신순') {
         filteredVideos.sort((a, b) {
+            // 1. 드롭다운 카테고리 순서 기반 정렬 (현재 선택된 대분류 기준)
+            List<String> currentRaids = RaidConstants.dropdownCategory[_selectedCategory] ?? [];
+            if (currentRaids.isEmpty) currentRaids = RaidConstants.dropdownCategory['군단장 레이드']!; // 기본값 폴백
+
+            int getRaidIndex(dynamic item) {
+              String title = (item is RaidVideo) ? item.title : (item as PlaylistItem).title;
+              String raidName = (item is RaidVideo) ? item.raidName : '';
+
+              for (int i = 0; i < currentRaids.length; i++) {
+                String raid = currentRaids[i];
+                if (raid == '전체') continue; // '전체'는 매칭 기준에서 제외
+                
+                if (raid.contains('(')) {
+                  String act = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? '';
+                  String realRaid = raid.split(')').last;
+                  if (title.contains(act) || title.contains(realRaid) || raidName.contains(act) || raidName.contains(realRaid)) {
+                    return i;
+                  }
+                } else if (title.contains(raid) || raidName.contains(raid)) {
+                  return i;
+                }
+              }
+              return 999;
+            }
+
+            int indexA = getRaidIndex(a);
+            int indexB = getRaidIndex(b);
+
+            if (indexA != indexB) {
+              return indexA.compareTo(indexB);
+            }
+
+            // 2. 같은 레이드 내에서는 최신순
             DateTime dateA = (a is RaidVideo) ? (a.createdAt ?? DateTime(2000)) : DateTime.tryParse((a as PlaylistItem).publishedAt) ?? DateTime(2000);
             DateTime dateB = (b is RaidVideo) ? (b.createdAt ?? DateTime(2000)) : DateTime.tryParse((b as PlaylistItem).publishedAt) ?? DateTime(2000);
             return dateB.compareTo(dateA);
@@ -373,11 +406,38 @@ class _HomePageState extends State<HomePage> {
 
     if (sectionItems.isEmpty) return const SizedBox.shrink();
 
-    // 최신순 정렬
+    // 정렬 로직: 1순위 - 드롭다운 레이드 순서, 2순위 - 최신순
     sectionItems.sort((a, b) {
+      // 1순위: 레이드 순서 비교
+      int getRaidIndex(dynamic item) {
+        for (int i = 0; i < actualRaids.length; i++) {
+          String raid = actualRaids[i];
+          if (raid.contains('(')) {
+            String act = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? '';
+            String realRaid = raid.split(')').last;
+            if (_checkKeywordMatch(item, act) || 
+                (item is RaidVideo && item.title.contains(realRaid)) || 
+                (item is PlaylistItem && item.title.contains(realRaid))) {
+              return i;
+            }
+          } else if (_checkKeywordMatch(item, raid)) {
+            return i;
+          }
+        }
+        return 999; // 매칭되는 레이드가 없으면 맨 뒤로
+      }
+
+      int indexA = getRaidIndex(a);
+      int indexB = getRaidIndex(b);
+
+      if (indexA != indexB) {
+        return indexA.compareTo(indexB); // 레이드 순서대로 오름차순 정렬
+      }
+
+      // 2순위: 레이드 순서가 같으면 날짜 최신순 비교
       DateTime dateA = (a is RaidVideo) ? (a.createdAt ?? DateTime(2000)) : DateTime.tryParse((a as PlaylistItem).publishedAt) ?? DateTime(2000);
       DateTime dateB = (b is RaidVideo) ? (b.createdAt ?? DateTime(2000)) : DateTime.tryParse((b as PlaylistItem).publishedAt) ?? DateTime(2000);
-      return dateB.compareTo(dateA);
+      return dateB.compareTo(dateA); // 날짜 내림차순 정렬
     });
 
     final ScrollController scrollController = ScrollController();
