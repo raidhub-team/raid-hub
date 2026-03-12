@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:async'; // Add Timer
+import 'dart:async';
+import 'dart:ui'; // For ImageFilter
 import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
 /// [LandingScreen]
-/// 앱에 처음 접속했을 때 보여지는 대문(Hero) 화면입니다.
-/// 시간에 따라 부드럽게 배경 이미지가 교체(CrossFade)되는 애니메이션 효과가 있습니다.
+/// 앱의 첫인상을 결정하는 세련된 랜딩 페이지입니다.
+/// 게이밍 감성의 글래스모피즘(Glassmorphism) UI와 부드러운 배경 전환 효과가 적용되어 있습니다.
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
 
@@ -16,11 +17,11 @@ class LandingScreen extends StatefulWidget {
   State<LandingScreen> createState() => _LandingScreenState();
 }
 
-class _LandingScreenState extends State<LandingScreen> {
+class _LandingScreenState extends State<LandingScreen> with SingleTickerProviderStateMixin {
   late Timer _timer;
   int _currentImageIndex = 0;
+  late AnimationController _fadeController;
 
-  // 사용할 배경 이미지 목록
   final List<String> _backgroundImages = [
     'assets/images/landing_bg.jpg',
     'assets/images/landing_bg2.jpg',
@@ -31,18 +32,24 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
-    // 5초마다 배경 이미지를 다음 인덱스로 변경
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
-      setState(() {
-        _currentImageIndex =
-            (_currentImageIndex + 1) % _backgroundImages.length;
-      });
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..forward();
+
+    _timer = Timer.periodic(const Duration(seconds: 6), (Timer t) {
+      if (mounted) {
+        setState(() {
+          _currentImageIndex = (_currentImageIndex + 1) % _backgroundImages.length;
+        });
+      }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel(); // 화면을 벗어날 때 타이머 종료
+    _timer.cancel();
+    _fadeController.dispose();
     super.dispose();
   }
 
@@ -53,24 +60,31 @@ class _LandingScreenState extends State<LandingScreen> {
     final isDark = themeProvider.isDarkMode;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. 크로스 페이드(CrossFade) 배경 이미지 애니메이션
+          // 1. 다이나믹 배경 이미지 (크로스 페이드)
           Positioned.fill(
             child: AnimatedSwitcher(
-              duration: const Duration(seconds: 2), // 2초 동안 부드럽게 전환
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(opacity: animation, child: child);
-              },
+              duration: const Duration(milliseconds: 2000),
               child: Container(
-                key: ValueKey<int>(_currentImageIndex), // key가 바뀌면 애니메이션이 발동됨
+                key: ValueKey<int>(_currentImageIndex),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(_backgroundImages[_currentImageIndex]),
                     fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(isDark ? 0.6 : 0.4),
-                      BlendMode.darken,
+                  ),
+                ),
+                // 어두운 오버레이 레이어
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.3),
+                        Colors.black.withValues(alpha: 0.7),
+                      ],
                     ),
                   ),
                 ),
@@ -78,122 +92,147 @@ class _LandingScreenState extends State<LandingScreen> {
             ),
           ),
 
-          // 2. 상단 우측 버튼들 (다크모드 & 로그인)
+          // 2. 상단 액션 바 (다크모드 & 관리자)
           Positioned(
-            top: 40,
+            top: 50,
             right: 20,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    isDark ? Icons.light_mode : Icons.dark_mode,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  onPressed: () => themeProvider.toggleTheme(),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: Icon(
-                    authService.isAuthenticated
-                        ? Icons.logout
-                        : Icons.admin_panel_settings,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                  tooltip: authService.isAuthenticated ? '로그아웃' : '관리자 로그인',
-                  onPressed: () {
-                    if (authService.isAuthenticated) {
-                      authService.logout();
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+            child: FadeTransition(
+              opacity: _fadeController,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    color: Colors.white.withValues(alpha: 0.1),
+                    child: Row(
+                      children: [
+                        _buildHeaderIcon(
+                          icon: isDark ? Icons.light_mode : Icons.dark_mode,
+                          onPressed: () => themeProvider.toggleTheme(),
                         ),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // 3. 중앙 콘텐츠 (타이틀 & 버튼)
-          SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 타이틀
-                  const Text(
-                    'Lost Ark\nRaid Hub',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black54,
-                          blurRadius: 10,
-                          offset: Offset(2, 2),
+                        Container(width: 1, height: 20, color: Colors.white24),
+                        _buildHeaderIcon(
+                          icon: authService.isAuthenticated ? Icons.logout : Icons.admin_panel_settings,
+                          tooltip: authService.isAuthenticated ? '로그아웃' : '관리자',
+                          onPressed: () {
+                            if (authService.isAuthenticated) {
+                              authService.logout();
+                            } else {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+                            }
+                          },
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                ),
+              ),
+            ),
+          ),
 
-                  // 서브 타이틀
+          // 3. 중앙 메인 콘텐츠
+          Center(
+            child: FadeTransition(
+              opacity: _fadeController,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 로고 및 타이틀 섹션
+                  Column(
+                    children: [
+                      const Icon(Icons.hub_outlined, color: Colors.blueAccent, size: 60),
+                      const SizedBox(height: 10),
+                      Text(
+                        'LOST ARK',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blueAccent.withValues(alpha: 0.8),
+                          letterSpacing: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        'RAID HUB',
+                        style: TextStyle(
+                          fontSize: 56,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: -1,
+                          height: 1.1,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 15),
+                        width: 40,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
                   const Text(
-                    '모든 레이드 공략과 컨닝페이퍼를 한곳에서',
+                    '당신의 완벽한 레이드를 위한\n올인원 공략 저장소',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white70,
-                      letterSpacing: 1,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black87,
-                          blurRadius: 5,
-                          offset: Offset(1, 1),
-                        ),
-                      ],
+                      fontWeight: FontWeight.w300,
+                      height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 60),
 
-                  // 퀵 메뉴 버튼 1: 영상 보러가기
-                  _buildMenuButton(
+                  // 메뉴 버튼들 (글래스모피즘 스타일)
+                  _buildGlassButton(
                     context,
-                    title: '공략 영상 찾기',
-                    icon: Icons.play_circle_fill,
-                    color: const Color(0xFF4A90E2),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(initialIndex: 0),
-                        ),
-                      );
-                    },
+                    title: '공략 영상 탐색',
+                    subtitle: '가장 빠르고 정확한 가이드',
+                    icon: Icons.play_arrow_rounded,
+                    primaryColor: Colors.blueAccent,
+                    onTap: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 0)),
+                    ),
                   ),
                   const SizedBox(height: 20),
-
-                  // 퀵 메뉴 버튼 2: 컨닝페이퍼 보러가기
-                  _buildMenuButton(
+                  _buildGlassButton(
                     context,
-                    title: '컨닝페이퍼 보기',
-                    icon: Icons.image_search,
-                    color: const Color(0xFF5032B6),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(initialIndex: 1),
-                        ),
-                      );
-                    },
+                    title: '컨닝 페이퍼',
+                    subtitle: '핵심 기믹 한눈에 보기',
+                    icon: Icons.auto_awesome_motion_rounded,
+                    primaryColor: Colors.purpleAccent,
+                    onTap: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 1)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 4. 하단 푸터
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: FadeTransition(
+              opacity: _fadeController,
+              child: Column(
+                children: [
+                  const Icon(Icons.keyboard_arrow_down, color: Colors.white38, size: 30),
+                  const SizedBox(height: 10),
+                  Text(
+                    '© 2026 RAID HUB TEAM. ALL RIGHTS RESERVED.',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.white.withValues(alpha: 0.3),
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -204,51 +243,94 @@ class _LandingScreenState extends State<LandingScreen> {
     );
   }
 
-  // 예쁜 그라데이션 퀵 메뉴 버튼 빌더
-  Widget _buildMenuButton(
+  Widget _buildHeaderIcon({required IconData icon, String? tooltip, required VoidCallback onPressed}) {
+    return IconButton(
+      icon: Icon(icon, color: Colors.white, size: 24),
+      tooltip: tooltip,
+      onPressed: onPressed,
+      splashRadius: 20,
+    );
+  }
+
+  Widget _buildGlassButton(
     BuildContext context, {
     required String title,
+    required String subtitle,
     required IconData icon,
-    required Color color,
+    required Color primaryColor,
     required VoidCallback onTap,
   }) {
     return Container(
-      width: 280,
-      height: 60,
+      width: 320,
+      height: 80,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.5),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: primaryColor.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          elevation: 0, // Container의 BoxShadow를 사용하기 위해 기본 elevation 제거
-        ),
-        onPressed: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 28),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Material(
+            color: Colors.white.withValues(alpha: 0.05),
+            child: InkWell(
+              onTap: onTap,
+              hoverColor: Colors.white.withValues(alpha: 0.05),
+              splashColor: primaryColor.withValues(alpha: 0.2),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(icon, color: primaryColor, size: 28),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            subtitle,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withValues(alpha: 0.5),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.3)),
+                  ],
+                ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
