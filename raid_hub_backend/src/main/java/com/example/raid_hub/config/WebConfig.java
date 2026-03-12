@@ -17,6 +17,10 @@ public class WebConfig implements WebMvcConfigurer {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
     String resourceLocation = uploadPath.toUri().toString();
+    
+    if (!resourceLocation.endsWith("/")) {
+        resourceLocation += "/";
+    }
 
     // /uploads/cheatsheets/** 요청이 오면 실제 로컬 폴더에서 파일을 찾음
     registry.addResourceHandler("/uploads/cheatsheets/**").addResourceLocations(resourceLocation);
