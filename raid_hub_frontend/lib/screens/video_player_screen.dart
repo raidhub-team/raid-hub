@@ -24,6 +24,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         mute: false,
       ),
     );
+    _controller.setVolume(20); // 초기 볼륨을 20%로 설정
     _controller.loadVideoById(videoId: widget.videoId);
   }
 
