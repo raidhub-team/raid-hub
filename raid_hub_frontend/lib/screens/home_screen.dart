@@ -281,8 +281,39 @@ class _HomePageState extends State<HomePage> {
       return matchesCategory && matchesKeyword && matchesSearch;
     }).toList();
 
-    // 컨닝페이퍼 정렬 (최신순 기본)
-    filteredCS.sort((a, b) => (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000)));
+    // 컨닝페이퍼 정렬 (1순위: 드롭다운 레이드 순서, 2순위: 최신순)
+    filteredCS.sort((a, b) {
+        List<String> currentRaids = RaidConstants.dropdownCategory[_selectedCategory] ?? [];
+        if (currentRaids.isEmpty) currentRaids = RaidConstants.dropdownCategory['군단장 레이드']!;
+
+        int getRaidIndex(CheatSheet cs) {
+          for (int i = 0; i < currentRaids.length; i++) {
+            String raid = currentRaids[i];
+            if (raid == '전체') continue;
+            
+            if (raid.contains('(')) {
+              String term = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? raid;
+              String realRaid = raid.split(')').last;
+              if (cs.raidName.contains(term) || cs.title.contains(term) || 
+                  cs.raidName.contains(realRaid) || cs.title.contains(realRaid)) {
+                return i;
+              }
+            } else if (cs.raidName.contains(raid) || cs.title.contains(raid)) {
+              return i;
+            }
+          }
+          return 999;
+        }
+
+        int indexA = getRaidIndex(a);
+        int indexB = getRaidIndex(b);
+
+        if (indexA != indexB) {
+          return indexA.compareTo(indexB);
+        }
+
+        return (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000));
+    });
     _filteredCheatSheets = filteredCS;
   }
 
@@ -291,6 +322,185 @@ class _HomePageState extends State<HomePage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1400), // 최대 너비 제한 (너무 넓어지는 것 방지)
         child: child,
+      ),
+    );
+  }
+
+  // 컨닝페이퍼 탭 전용 넷플릭스 스타일 콘텐츠 빌더
+  Widget _buildCheatSheetsContent() {
+    bool isFiltering = _searchQuery.isNotEmpty || _selectedCategory != '전체 레이드' || _selectedRaid != '전체';
+    
+    if (isFiltering) {
+      return _buildCheatSheetsGrid();
+    }
+
+    List<Widget> sections = RaidConstants.dropdownCategory.keys
+          .where((cat) => cat != '전체 레이드')
+          .map((category) => _buildCheatSheetSection(category))
+          .toList();
+    
+    sections.add(_buildCheatSheetSection('로아 유용한 팁'));
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      children: sections,
+    );
+  }
+
+  // 컨닝페이퍼 전용 가로 스크롤 섹션 빌더
+  Widget _buildCheatSheetSection(String categoryName) {
+    final List<String> actualRaids;
+    if (RaidConstants.dropdownCategory.containsKey(categoryName)) {
+      final List<String> subRaids = RaidConstants.dropdownCategory[categoryName] ?? [];
+      actualRaids = subRaids.where((r) => r != '전체').toList();
+    } else {
+      actualRaids = [categoryName];
+    }
+    
+    final sectionItems = _allCheatSheets.where((cs) {
+      return actualRaids.any((raid) {
+        if (raid.contains('(')) {
+          String term = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? raid;
+          String realRaid = raid.split(')').last;
+          return cs.raidName.contains(term) || cs.title.contains(term) || 
+                 cs.raidName.contains(realRaid) || cs.title.contains(realRaid);
+        }
+        // 로아 유용한 팁(기타) 처리
+        if (categoryName == '로아 유용한 팁') {
+          final otherKeywords = RaidConstants.guideKeywords.where((k) => k != '전체' && k != '로아 유용한 팁').toList();
+          return !otherKeywords.any((k) => cs.raidName.contains(k) || cs.title.contains(k));
+        }
+        return cs.raidName.contains(raid) || cs.title.contains(raid);
+      });
+    }).toList();
+
+    if (sectionItems.isEmpty) return const SizedBox.shrink();
+
+    // 정렬 로직: 1순위 - 드롭다운 레이드 순서, 2순위 - 최신순
+    sectionItems.sort((a, b) {
+      int getRaidIndex(CheatSheet cs) {
+        for (int i = 0; i < actualRaids.length; i++) {
+          String raid = actualRaids[i];
+          if (raid == '전체') continue;
+          
+          if (raid.contains('(')) {
+            String term = RegExp(r'\((.*?)\)').firstMatch(raid)?.group(1) ?? raid;
+            String realRaid = raid.split(')').last;
+            if (cs.raidName.contains(term) || cs.title.contains(term) || 
+                cs.raidName.contains(realRaid) || cs.title.contains(realRaid)) {
+              return i;
+            }
+          } else if (cs.raidName.contains(raid) || cs.title.contains(raid)) {
+            return i;
+          }
+        }
+        return 999;
+      }
+
+      int indexA = getRaidIndex(a);
+      int indexB = getRaidIndex(b);
+
+      if (indexA != indexB) {
+        return indexA.compareTo(indexB);
+      }
+
+      return (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000));
+    });
+
+    final ScrollController scrollController = ScrollController();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 25, 20, 15),
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: categoryName == '로아 유용한 팁' ? Colors.orangeAccent : Colors.purpleAccent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                categoryName,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: -0.8),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 380, // 컨닝페이퍼 카드는 세로가 더 김
+          child: Stack(
+            children: [
+              ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                scrollDirection: Axis.horizontal,
+                itemCount: sectionItems.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 320, // 가로 카드 너비
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    child: CheatSheetCard(
+                      cheatSheet: sectionItems[index],
+                      onDelete: () => _confirmDeleteCheatSheet(sectionItems[index]),
+                    ),
+                  );
+                },
+              ),
+              if (kIsWeb) ...[
+                Positioned(
+                  left: 0, top: 0, bottom: 0,
+                  child: Center(
+                    child: _buildScrollButton(scrollController, isForward: false),
+                  ),
+                ),
+                Positioned(
+                  right: 0, top: 0, bottom: 0,
+                  child: Center(
+                    child: _buildScrollButton(scrollController, isForward: true),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 화살표 버튼 공통 위젯
+  Widget _buildScrollButton(ScrollController controller, {required bool isForward}) {
+    return Padding(
+      padding: EdgeInsets.only(left: isForward ? 0 : 8.0, right: isForward ? 8.0 : 0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () {
+            controller.animateTo(
+              controller.offset + (isForward ? 350 : -350),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+          child: Container(
+            width: 50, height: 50,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.7),
+              shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10)],
+            ),
+            child: Icon(
+              isForward ? Icons.arrow_forward_ios_rounded : Icons.arrow_back_ios_new_rounded,
+              color: Colors.white, size: 24
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -363,12 +573,11 @@ class _HomePageState extends State<HomePage> {
                   ? _buildSkeletonGrid() 
                   : (_allContent.isEmpty)
                     ? _buildErrorView()
-                    : (_currentIndex == 0 ? _buildVideosContent() : _buildCheatSheetsGrid()),
-              ),
-            ],
-          ),
-        ),
-      ),
+                    : (_currentIndex == 0 ? _buildVideosContent() : _buildCheatSheetsContent()),
+                    ),
+                    ],
+                    ),
+                    ),      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -535,38 +744,7 @@ class _HomePageState extends State<HomePage> {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () {
-                            scrollController.animateTo(
-                              scrollController.offset - 300,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  blurRadius: 10,
-                                  offset: const Offset(2, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 24),
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: _buildScrollButton(scrollController, isForward: false),
                   ),
                 ),
                 Positioned(
@@ -574,38 +752,7 @@ class _HomePageState extends State<HomePage> {
                   top: 0,
                   bottom: 0,
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: const CircleBorder(),
-                          onTap: () {
-                            scrollController.animateTo(
-                              scrollController.offset + 300,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  blurRadius: 10,
-                                  offset: const Offset(-2, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 24),
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: _buildScrollButton(scrollController, isForward: true),
                   ),
                 ),
               ],
