@@ -516,13 +516,20 @@ class _HomePageState extends State<HomePage> {
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: themeProvider.isDarkMode ? Colors.black.withOpacity(0.2) : Colors.blueGrey.shade50,
+        backgroundColor: themeProvider.isDarkMode 
+            ? Colors.black.withOpacity(0.2) 
+            : const Color(0xFFF8F9FA).withOpacity(0.8), // 라이트 모드 앱바 톤 다운
         title: Text(
           _currentIndex == 0 ? 'Lost Ark Raid Hub' : 'Raid Cheat Sheets',
-          style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+          style: TextStyle(
+            fontWeight: FontWeight.bold, 
+            letterSpacing: -0.5,
+            color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF2D3436), // 진한 차콜 텍스트
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.home_rounded),
+          color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF2D3436),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -533,15 +540,18 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             icon: Icon(themeProvider.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
+            color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF2D3436),
             onPressed: () => themeProvider.toggleTheme(),
           ),
           if (authService.isAdmin)
             IconButton(
               icon: const Icon(Icons.visibility_off_rounded),
+              color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF2D3436),
               onPressed: _showBlockedVideosDialog,
             ),
           IconButton(
             icon: Icon(authService.isAuthenticated ? Icons.logout_rounded : Icons.admin_panel_settings_rounded),
+            color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF2D3436),
             onPressed: () {
                 if (authService.isAuthenticated) {
                     authService.logout();
@@ -560,7 +570,7 @@ class _HomePageState extends State<HomePage> {
             end: Alignment.bottomCenter,
             colors: themeProvider.isDarkMode 
               ? [const Color(0xFF1A1C20), const Color(0xFF0F1012)] // 깊은 다크 톤
-              : [Colors.white, const Color(0xFFF0F2F5)], // 부드러운 라이트 톤
+              : [const Color(0xFFF8F9FA), const Color(0xFFE9ECEF)], // 눈이 편안한 오프화이트 톤
           ),
         ),
         child: _buildCenteredContent(
