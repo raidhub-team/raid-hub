@@ -34,7 +34,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/users/register")
-                    .permitAll()
+                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/api/users/check-username/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/youtube/playlist-items")

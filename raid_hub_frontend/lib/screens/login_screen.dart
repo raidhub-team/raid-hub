@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:raid_hub_frontend/services/auth_service.dart'; // Import AuthService
-import 'package:raid_hub_frontend/screens/signup_screen.dart'; // Import SignupScreen
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -85,22 +84,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 24.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    ElevatedButton(onPressed: _login, child: const Text('로그인')),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignupScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text('회원가입'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                  ],
+                    child: const Text('로그인'),
+                  ),
                 ),
               ],
             ),
