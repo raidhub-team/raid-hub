@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:ui'; // For ImageFilter
 import 'package:shared_preferences/shared_preferences.dart'; // Add SharedPreferences
+import 'package:flutter_markdown/flutter_markdown.dart'; // Add flutter_markdown
+import 'package:url_launcher/url_launcher.dart'; // Add url_launcher
 import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart'; // Add ApiService import
 import 'login_screen.dart';
 import 'home_screen.dart';
 
@@ -118,9 +121,28 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      _noticeContent,
-                      style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.6),
+                    SelectionArea(
+                      child: MarkdownBody(
+                        data: _noticeContent,
+                        styleSheet: MarkdownStyleSheet(
+                          p: const TextStyle(color: Colors.white70, fontSize: 15, height: 1.6),
+                          h1: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                          h2: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          strong: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                          listBullet: const TextStyle(color: Colors.blueAccent),
+                          horizontalRuleDecoration: BoxDecoration(
+                            border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1), width: 1)),
+                          ),
+                        ),
+                        onTapLink: (text, href, title) async {
+                          if (href != null && (href.startsWith('http://') || href.startsWith('https://'))) {
+                            final url = Uri.parse(href);
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            }
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),

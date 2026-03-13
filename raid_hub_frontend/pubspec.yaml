@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.0.0
   youtube_player_iframe: ^5.2.0
   shared_preferences: ^2.2.3
+  flutter_markdown: ^0.7.5
   file_picker: ^8.1.7
   flutter_dotenv: ^6.0.0
 
