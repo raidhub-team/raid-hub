@@ -39,15 +39,24 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/youtube/playlist-items")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/notice").permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/api/notice").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/admin-posts/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/admin-posts").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/admin-posts/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/admin-posts/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/api/stats/log").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/stats/dashboard").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/api/videos").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/notice")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/api/notice")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/api/admin-posts/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/admin-posts")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/api/admin-posts/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/api/admin-posts/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/stats/log")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/stats/dashboard")
+                    .hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/api/videos")
+                    .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/api/videos/**")
                     .hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/blocked-videos")
@@ -82,9 +91,7 @@ public class SecurityConfig {
                           Map<String, Object> responseMap = new HashMap<>();
                           responseMap.put("success", false);
                           responseMap.put("message", "인증이 필요합니다.");
-                          response
-                              .getWriter()
-                              .write(objectMapper.writeValueAsString(responseMap));
+                          response.getWriter().write(objectMapper.writeValueAsString(responseMap));
                         })
                     .accessDeniedHandler(
                         (request, response, accessDeniedException) -> {
@@ -137,13 +144,13 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     // 프론트엔드 도메인 추가
-    config.setAllowedOriginPatterns(Arrays.asList(
-        "http://localhost:*",
-        "http://127.0.0.1:*",
-        "http://20.89.237.161*",
-        "https://raidhub.co.kr",
-        "https://www.raidhub.co.kr"
-    ));
+    config.setAllowedOriginPatterns(
+        Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "http://20.89.237.161*",
+            "https://raidhub.co.kr",
+            "https://www.raidhub.co.kr"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(Arrays.asList("*"));
     config.setExposedHeaders(Arrays.asList("Set-Cookie"));

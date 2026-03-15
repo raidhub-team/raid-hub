@@ -1,7 +1,7 @@
 package com.example.raid_hub.controller;
 
-import com.example.raid_hub.dto.UserRegistrationDto;
 import com.example.raid_hub.dto.PasswordChangeDto;
+import com.example.raid_hub.dto.UserRegistrationDto;
 import com.example.raid_hub.entity.User;
 import com.example.raid_hub.service.UserService;
 import jakarta.validation.Valid;
@@ -26,9 +26,8 @@ public class UserController {
   @PutMapping("/change-password")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Map<String, String>> changePassword(
-      Principal principal, 
-      @Valid @RequestBody PasswordChangeDto dto) {
-    
+      Principal principal, @Valid @RequestBody PasswordChangeDto dto) {
+
     userService.changePassword(principal.getName(), dto);
     Map<String, String> response = new HashMap<>();
     response.put("message", "비밀번호가 성공적으로 변경되었습니다.");

@@ -20,17 +20,16 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(rateLimitInterceptor)
-        .addPathPatterns("/api/**"); // 모든 API 경로에 도배 방지 적용
+    registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/api/**"); // 모든 API 경로에 도배 방지 적용
   }
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
     String resourceLocation = uploadPath.toUri().toString();
-    
+
     if (!resourceLocation.endsWith("/")) {
-        resourceLocation += "/";
+      resourceLocation += "/";
     }
 
     // /uploads/cheatsheets/** 요청이 오면 실제 로컬 폴더에서 파일을 찾음

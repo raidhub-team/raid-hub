@@ -1,8 +1,8 @@
 package com.example.raid_hub.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "admin_posts")
@@ -12,27 +12,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class AdminPost {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(nullable = false)
+  private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
+  @Column(columnDefinition = "TEXT", nullable = false)
+  private String content;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+  @PrePersist
+  public void prePersist() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+  @PreUpdate
+  public void preUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 }
