@@ -241,230 +241,215 @@ class _LandingScreenState extends State<LandingScreen> with SingleTickerProvider
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // 1. 다이나믹 배경 이미지 (크로스 페이드)
-          Positioned.fill(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 2000),
-              child: Container(
-                key: ValueKey<int>(_currentImageIndex),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(_backgroundImages[_currentImageIndex]),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                // 어두운 오버레이 레이어
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.7),
-                      ],
-                    ),
-                  ),
-                ),
+      body: SingleChildScrollView(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 2000),
+          child: Container(
+            key: ValueKey<int>(_currentImageIndex),
+            constraints: BoxConstraints(minHeight: size.height),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(_backgroundImages[_currentImageIndex]),
+                fit: BoxFit.cover,
               ),
             ),
-          ),
-
-          // 2. 상단 액션 바 (다크모드 & 관리자)
-          Positioned(
-            top: 50,
-            right: 20,
-            child: FadeTransition(
-              opacity: _fadeController,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    color: Colors.white.withValues(alpha: 0.1),
-                    child: Row(
-                      children: [
-                        _buildHeaderIcon(
-                          icon: isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                          onPressed: () => themeProvider.toggleTheme(),
-                        ),
-                        if (authService.isAdmin) ...[
-                          Container(width: 1, height: 20, color: Colors.white24),
-                          _buildHeaderIcon(
-                            icon: Icons.bar_chart_rounded,
-                            tooltip: '통계 대시보드',
-                            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen())),
-                          ),
-                          Container(width: 1, height: 20, color: Colors.white24),
-                          _buildHeaderIcon(
-                            icon: Icons.lock_reset_rounded,
-                            tooltip: '비밀번호 변경',
-                            onPressed: _showChangePasswordDialog,
-                          ),
-                        ],
-                        Container(width: 1, height: 20, color: Colors.white24),
-                        _buildHeaderIcon(
-                          icon: authService.isAuthenticated ? Icons.logout_rounded : Icons.admin_panel_settings_rounded,
-                          tooltip: authService.isAuthenticated ? '로그아웃' : '관리자',
-                          onPressed: () {
-                            if (authService.isAuthenticated) {
-                              authService.logout();
-                            } else {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // 3. 중앙 메인 콘텐츠
-          Center(
-            child: FadeTransition(
-              opacity: _fadeController,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // 로고 및 타이틀 섹션
-                    Column(
-                      children: [
-                        Icon(Icons.hub_outlined, color: Colors.blueAccent, size: isWide ? 80 : 60),
-                        const SizedBox(height: 10),
-                        Text(
-                          'LOST ARK',
-                          style: TextStyle(
-                            fontSize: isWide ? 20 : 16,
-                            color: Colors.blueAccent.withValues(alpha: 0.8),
-                            letterSpacing: isWide ? 12 : 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'RAID HUB',
-                          style: TextStyle(
-                            fontSize: isWide ? 80 : 56,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -1,
-                            height: 1.1,
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 15),
-                          width: isWide ? 60 : 40,
-                          height: 3,
-                          decoration: BoxDecoration(
-                            color: Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: isWide ? 40 : 24),
-                    Text(
-                      '당신의 완벽한 레이드를 위한\n올인원 공략 저장소',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: isWide ? 24 : 18,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w300,
-                        height: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: isWide ? 80 : 60),
-
-                    // 메뉴 버튼들 (글래스모피즘 스타일)
-                    Wrap(
-                      spacing: 20,
-                      runSpacing: 20,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _buildGlassButton(
-                          context,
-                          title: '공략 영상 탐색',
-                          subtitle: '가장 빠르고 정확한 가이드',
-                          icon: Icons.play_arrow_rounded,
-                          primaryColor: Colors.blueAccent,
-                          width: isWide ? 380 : 320,
-                          onTap: () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 0)),
-                          ),
-                        ),
-                        _buildGlassButton(
-                          context,
-                          title: '컨닝 페이퍼',
-                          subtitle: '핵심 기믹 한눈에 보기',
-                          icon: Icons.auto_awesome_motion_rounded,
-                          primaryColor: Colors.purpleAccent,
-                          width: isWide ? 380 : 320,
-                          onTap: () => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 1)),
-                          ),
-                        ),
-                        _buildGlassButton(
-                          context,
-                          title: '관리자 소식',
-                          subtitle: '패치노트 및 공지사항',
-                          icon: Icons.notifications_active_rounded,
-                          primaryColor: Colors.orangeAccent,
-                          width: isWide ? 380 : 320,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const AdminPostScreen()),
-                          ),
-                        ),
-                      ],
-                    ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.black.withValues(alpha: 0.7),
                   ],
                 ),
               ),
-            ),
-          ),
-
-          // 4. 하단 푸터
-          Positioned(
-            bottom: 30,
-            left: 0,
-            right: 0,
-            child: FadeTransition(
-              opacity: _fadeController,
-              child: Column(
-                children: [
-                  const Icon(Icons.keyboard_arrow_down, color: Colors.white38, size: 30),
-                  const SizedBox(height: 10),
-                  Text(
-                    '문의: vmfhdirn2@kakao.com',
-                    style: TextStyle(
-                      fontSize: isWide ? 13 : 11,
-                      color: Colors.white.withValues(alpha: 0.5),
-                      letterSpacing: 0.5,
+              child: SafeArea(
+                child: FadeTransition(
+                  opacity: _fadeController,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: _buildTopActionBar(isDark, themeProvider, authService),
+                        ),
+                        SizedBox(height: isWide ? 36 : 24),
+                        Column(
+                          children: [
+                            Icon(Icons.hub_outlined, color: Colors.blueAccent, size: isWide ? 80 : 60),
+                            const SizedBox(height: 10),
+                            Text(
+                              'LOST ARK',
+                              style: TextStyle(
+                                fontSize: isWide ? 20 : 16,
+                                color: Colors.blueAccent.withValues(alpha: 0.8),
+                                letterSpacing: isWide ? 12 : 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'RAID HUB',
+                              style: TextStyle(
+                                fontSize: isWide ? 80 : 56,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: -1,
+                                height: 1.1,
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 15),
+                              width: isWide ? 60 : 40,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: isWide ? 40 : 24),
+                        Text(
+                          '당신의 완벽한 레이드를 위한\n올인원 공략 저장소',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: isWide ? 24 : 18,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w300,
+                            height: 1.5,
+                          ),
+                        ),
+                        SizedBox(height: isWide ? 80 : 60),
+                        Wrap(
+                          spacing: 20,
+                          runSpacing: 20,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _buildGlassButton(
+                              context,
+                              title: '공략 영상 탐색',
+                              subtitle: '가장 빠르고 정확한 가이드',
+                              icon: Icons.play_arrow_rounded,
+                              primaryColor: Colors.blueAccent,
+                              width: isWide ? 380 : 320,
+                              onTap: () => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 0)),
+                              ),
+                            ),
+                            _buildGlassButton(
+                              context,
+                              title: '컨닝 페이퍼',
+                              subtitle: '핵심 기믹 한눈에 보기',
+                              icon: Icons.auto_awesome_motion_rounded,
+                              primaryColor: Colors.purpleAccent,
+                              width: isWide ? 380 : 320,
+                              onTap: () => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => const HomePage(initialIndex: 1)),
+                              ),
+                            ),
+                            _buildGlassButton(
+                              context,
+                              title: '관리자 소식',
+                              subtitle: '패치노트 및 공지사항',
+                              icon: Icons.notifications_active_rounded,
+                              primaryColor: Colors.orangeAccent,
+                              width: isWide ? 380 : 320,
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const AdminPostScreen()),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: isWide ? 56 : 40),
+                        _buildFooter(isWide),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '© 2026 RAID HUB TEAM. ALL RIGHTS RESERVED.',
-                    style: TextStyle(
-                      fontSize: isWide ? 12 : 10,
-                      color: Colors.white.withValues(alpha: 0.3),
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildTopActionBar(bool isDark, ThemeProvider themeProvider, AuthService authService) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          color: Colors.white.withValues(alpha: 0.1),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeaderIcon(
+                icon: isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                onPressed: () => themeProvider.toggleTheme(),
+              ),
+              if (authService.isAdmin) ...[
+                Container(width: 1, height: 20, color: Colors.white24),
+                _buildHeaderIcon(
+                  icon: Icons.bar_chart_rounded,
+                  tooltip: '통계 대시보드',
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen())),
+                ),
+                Container(width: 1, height: 20, color: Colors.white24),
+                _buildHeaderIcon(
+                  icon: Icons.lock_reset_rounded,
+                  tooltip: '비밀번호 변경',
+                  onPressed: _showChangePasswordDialog,
+                ),
+              ],
+              Container(width: 1, height: 20, color: Colors.white24),
+              _buildHeaderIcon(
+                icon: authService.isAuthenticated ? Icons.logout_rounded : Icons.admin_panel_settings_rounded,
+                tooltip: authService.isAuthenticated ? '로그아웃' : '관리자',
+                onPressed: () {
+                  if (authService.isAuthenticated) {
+                    authService.logout();
+                  } else {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooter(bool isWide) {
+    return Column(
+      children: [
+        const Icon(Icons.keyboard_arrow_down, color: Colors.white38, size: 30),
+        const SizedBox(height: 10),
+        Text(
+          '문의: vmfhdirn2@kakao.com',
+          style: TextStyle(
+            fontSize: isWide ? 13 : 11,
+            color: Colors.white.withValues(alpha: 0.5),
+            letterSpacing: 0.5,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '© 2026 RAID HUB TEAM. ALL RIGHTS RESERVED.',
+          style: TextStyle(
+            fontSize: isWide ? 12 : 10,
+            color: Colors.white.withValues(alpha: 0.3),
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
     );
   }
 
