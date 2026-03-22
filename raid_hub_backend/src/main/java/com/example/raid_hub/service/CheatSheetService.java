@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,9 +38,26 @@ public class CheatSheetService {
   public CheatSheet uploadCheatSheet(
       String title, String raidName, String gate, String uploaderName, MultipartFile file)
       throws IOException {
-    // 1. 파일 이름 생성 (중복 방지)
+    
+    // 0. 파일 유효성 검사 (확장자 및 MIME 타입)
     String originalFilename = file.getOriginalFilename();
-    String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    if (originalFilename == null || !originalFilename.contains(".")) {
+      throw new IllegalArgumentException("유효하지 않은 파일 이름입니다.");
+    }
+
+    String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+    List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".webp");
+    
+    if (!allowedExtensions.contains(extension)) {
+      throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp만 가능)");
+    }
+
+    String contentType = file.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      throw new IllegalArgumentException("이미지 파일만 업로드할 수 있습니다.");
+    }
+
+    // 1. 파일 이름 생성 (중복 방지)
     String newFilename = UUID.randomUUID().toString() + extension;
 
     // 2. 파일 저장 경로 설정 및 저장

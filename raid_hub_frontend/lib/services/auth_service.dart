@@ -108,11 +108,15 @@ class AuthService extends ChangeNotifier {
         if (sessionId != null) {
           _sessionCookie = 'JSESSIONID=$sessionId';
           _username = username;
-          if (username == 'admin') {
+          
+          // 백엔드에서 전달받은 실제 role을 바탕으로 권한 설정
+          final String? backendRole = responseBody['role'];
+          if (backendRole == 'ROLE_ADMIN' || backendRole == 'ADMIN') {
             _role = 'ADMIN';
           } else {
             _role = 'USER';
           }
+          
           await _persistSession(sessionId, username);
           _loginErrorMessage = null;
           debugPrint('Login successful. Session ID: $sessionId, Role: $_role');

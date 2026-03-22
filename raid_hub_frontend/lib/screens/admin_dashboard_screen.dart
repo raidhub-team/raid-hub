@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import '../providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _loadStats();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      if (!authService.isAdmin) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('관리자 권한이 없습니다. 접근이 차단되었습니다.')),
+        );
+        Navigator.of(context).pop(); // 강제로 이전 화면으로 돌려보냄
+        return;
+      }
+      _loadStats();
+    });
   }
 
   Future<void> _loadStats() async {
