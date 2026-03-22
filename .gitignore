@@ -1,3 +1,8 @@
 .idea
 .vscode
 uploads
+
+# Local environment files
+.env
+.env.*
+!.env.example
