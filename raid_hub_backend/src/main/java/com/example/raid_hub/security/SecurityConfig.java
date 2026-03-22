@@ -117,12 +117,14 @@ public class SecurityConfig {
                           responseMap.put("success", true);
                           responseMap.put("message", "성공적으로 로그인하였습니다.");
                           responseMap.put("username", authentication.getName());
-                          
+
                           // 권한 정보 추가 (ROLE_ADMIN 등)
                           if (!authentication.getAuthorities().isEmpty()) {
-                            responseMap.put("role", authentication.getAuthorities().iterator().next().getAuthority());
+                            responseMap.put(
+                                "role",
+                                authentication.getAuthorities().iterator().next().getAuthority());
                           }
-                          
+
                           responseMap.put("sessionId", request.getSession().getId());
                           response.getWriter().write(objectMapper.writeValueAsString(responseMap));
                         })

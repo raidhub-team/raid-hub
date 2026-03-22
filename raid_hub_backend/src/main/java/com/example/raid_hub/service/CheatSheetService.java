@@ -38,7 +38,7 @@ public class CheatSheetService {
   public CheatSheet uploadCheatSheet(
       String title, String raidName, String gate, String uploaderName, MultipartFile file)
       throws IOException {
-    
+
     // 0. 파일 유효성 검사 (확장자 및 MIME 타입)
     String originalFilename = file.getOriginalFilename();
     if (originalFilename == null || !originalFilename.contains(".")) {
@@ -47,7 +47,7 @@ public class CheatSheetService {
 
     String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
     List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".webp");
-    
+
     if (!allowedExtensions.contains(extension)) {
       throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다. (jpg, jpeg, png, gif, webp만 가능)");
     }
