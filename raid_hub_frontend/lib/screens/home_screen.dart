@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'dart:async'; // Add Timer import
 import 'dart:ui'; // For ImageFilter
@@ -917,12 +917,13 @@ class _HomePageState extends State<HomePage> {
               color: Colors.blueAccent.withOpacity(0.1),
               blurRadius: 20,
               spreadRadius: -5,
+            )
+          else
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
         ],
       ),
       child: ClipRRect(
@@ -933,21 +934,19 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: isDark 
                 ? const Color(0xFF1E2228).withOpacity(0.7)
-                : Colors.white.withOpacity(0.8),
+                : Colors.white,
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
                 color: isDark 
                   ? Colors.white.withOpacity(0.1)
-                  : Colors.blueAccent.withOpacity(0.2),
-                width: 1.5,
+                  : Colors.grey.withOpacity(0.2),
+                width: 1.0,
               ),
-              gradient: LinearGradient(
+              gradient: isDark ? LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: isDark
-                  ? [Colors.white.withOpacity(0.05), Colors.transparent]
-                  : [Colors.white.withOpacity(0.3), Colors.transparent],
-              ),
+                colors: [Colors.white.withOpacity(0.05), Colors.transparent],
+              ) : null,
             ),
             child: child,
           ),
